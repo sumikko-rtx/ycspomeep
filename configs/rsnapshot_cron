@@ -1,0 +1,31 @@
+# Notes:
+#
+# (1) Before finishing this file, try Cron Job Run Time Predictor (https://cronjob.xyz/)
+#     to verify your schedule.
+#
+# (2) After that, save it as file: /etc/cron.d/rsnapshot_cron
+#
+# (3) On some linux distribution, you may need to run the command by root
+#
+#       "systemctl restart crond.service", or
+#       "service cron reload", or
+#       "service crond reload", or
+#       "/etc/init.d/cron reload", or
+#       "/etc/init.d/crond reload"
+#       (without quotes)
+#
+#     to make this change effect.
+#
+# (4) The cron configuration file structure:
+#
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  *   user-name  command to be executed
+  0 21  *  *  1-6 root       /usr/bin/python3 /var/pomeep/rsnapshot_run.py
+*/1  *  *  *  *   root       /usr/bin/python3 /var/pomeep/rsnapshot_monitor.py
+  0  0  *  *  0   root       /usr/bin/python3 /var/pomeep/disk_monitor.py
+
