@@ -22,8 +22,11 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
 
     #/* git refuses cloning if ycspomeep_at_tmpdir is not empty */
     cmd_rm_r(ycspomeep_at_tmpdir, force=True)
-    os.makedirs(ycspomeep_at_tmpdir)
-
+    try:
+        os.makedirs(ycspomeep_at_tmpdir)
+    except FileExistsError as e:
+        pass
+    
     #/* get from github repository */
     unused, unused, unused, unused = system_cmd(
         cmd=[
@@ -117,34 +120,39 @@ This currently the newest version available.
     # *         --exclude configs/ --exclude .git/ --exclude update.py
     # *         <ycspomeep_at_tmpdir>/ <this_py_dir>/
     # */
-
-    unused, unused, unused, unused = system_cmd(
-        cmd=['git', 'checkout', to_target_version],
-        cwd=ycspomeep_at_tmpdir,
-        raise_exception=True,
-    )
-
-    this_py_file = os.path.basename(__file__)
-    this_py_dir = os.path.realpath(os.path.dirname(__file__))
-    #this_py_dir = PROGRAM_DIR
-
-    cmd = [
-        'rsync', '-av',
-        '--exclude', '.git/',
-        '--exclude', 'configs/',
-        '--exclude', this_py_file,
-        '{0}/'.format(ycspomeep_at_tmpdir),
-        '{0}/'.format(this_py_dir),
-    ]
-
-    unused, output, unused, unused = system_cmd(
-        cmd=cmd,
-        cwd=ycspomeep_at_tmpdir,
-        raise_exception=True,
-    )
-
-    print('ycspomeep is successfully updated to version {0}'.format(to_target_version))
+    if have_new_version:
+        
+        unused, unused, unused, unused = system_cmd(
+            cmd=['git', 'checkout', to_target_version],
+            cwd=ycspomeep_at_tmpdir,
+            raise_exception=True,
+        )
     
+        this_py_file = os.path.basename(__file__)
+        this_py_dir = os.path.realpath(os.path.dirname(__file__))
+        #this_py_dir = PROGRAM_DIR
+    
+        cmd = [
+            'rsync', '-rv',
+            '--exclude', '.git/',
+            '--exclude', 'configs/',
+            '--exclude', this_py_file,
+            '{0}/'.format(ycspomeep_at_tmpdir),
+            '{0}/'.format(this_py_dir),
+        ]
+    
+        unused, output, unused, unused = system_cmd(
+            cmd=cmd,
+            cwd=ycspomeep_at_tmpdir,
+            raise_exception=True,
+        )
+
+        print('ycspomeep is successfully updated to version {0}!!!'.format(to_target_version))
+    
+    else:
+        print('ycspomeep is already the newest version {0}!!! Nothing to do!!!'.format(to_target_version))
+    
+        
 
 if __name__ == '__main__':
     print(simple_argparse(update_from_git, sys.argv[1:]))
