@@ -81,7 +81,7 @@ def rsnapshot_monitor():
             )
 
         #/* hit hard backup time limit
-        # * in this case, terminate pomeep's rsnapshot
+        # * in this case, terminate ycspomeep's rsnapshot
         # * the effect is same as CTRL+C
         # */
         if have_rsnapshot_time_reach_hard_limit:

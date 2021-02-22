@@ -8,7 +8,7 @@ from configs.email_settings import NOTIFY_DISK_MAX_BAD_SECTORS
 #
 # Check for disk any (possible) bad sectors
 # Note: run disk_self_test before calling disk_check_temperature
-#       since the are some offline smart attribute need to be update
+#       since the are some offline smart attribute need to be update_from_git
 #
 def disk_check_bad_sectors(preload_disks=[], negate=False):
 

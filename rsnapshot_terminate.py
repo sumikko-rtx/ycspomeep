@@ -3,7 +3,7 @@ import sys
 from simple_argparse import simple_argparse
 import os
 import psutil
-from configs.other_settings import DEFAULT_RSNAPSHOT_CONFIG_FILE
+from constants import DEFAULT_RSNAPSHOT_CONFIG_FILE
 
 
 #/* terminate process. including its child process */
@@ -20,7 +20,7 @@ def __terminate_process(proc):
     
     
 
-#/* programlly terminate pomeep's rsnapshot, including the child processes
+#/* programlly terminate ycspomeep's rsnapshot, including the child processes
 # *
 # * Note: this only search for process: rsnapshot -c RSNAPSHOT_CONFIG_FILE ...
 # */
@@ -76,7 +76,7 @@ def rsnapshot_terminate():
         if have_rsnapshot and have_rsnapshot_c_switch and have_rsnapshot_config_file:
 
             #/* remove all lockfiles
-            # * (ensure no pomeep rsnapshot is runnning)
+            # * (ensure no ycspomeep rsnapshot is runnning)
             # */
             __terminate_process(proc)
 

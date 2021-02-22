@@ -4,7 +4,7 @@ from simple_argparse import simple_argparse
 from system_cmd import system_cmd
 import os
 from cmd_rm_r import cmd_rm_r
-from configs.other_settings import TEMP_DIR, CURRENT_VERSION
+from constants import TEMP_DIR, CURRENT_VERSION
 
 
 def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
@@ -129,7 +129,7 @@ This currently the newest version available.
     #this_py_dir = PROGRAM_DIR
 
     cmd = [
-        'rsync', '-av',
+        'rsync', '-avn',
         '--exclude', '.git/',
         '--exclude', 'configs/',
         '--exclude', this_py_file,

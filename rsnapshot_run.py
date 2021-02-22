@@ -3,7 +3,7 @@ import sys
 from simple_argparse import simple_argparse
 import os
 from system_cmd import system_cmd
-from configs.other_settings import DEFAULT_RSNAPSHOT_CONFIG_FILE, PROGRAM_DIR,\
+from constants import DEFAULT_RSNAPSHOT_CONFIG_FILE, PROGRAM_DIR,\
     DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE,\
     DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE
 from rsnapconfig_get_snapshot_root import rsnapconfig_get_snapshot_root
@@ -13,7 +13,7 @@ from cmd_cat import cmd_cat
 
 # this script does the following:
 #
-# rsnapshot rsnapshot.cfg alpha 2>&1 | tee snapshot_root/alpha.0/rsnapshot.log | rsnapreport.pl | email_report.update
+# rsnapshot rsnapshot.cfg alpha 2>&1 | tee snapshot_root/alpha.0/rsnapshot.log | rsnapreport.pl | email_report.update_from_git
 # (1)                                  (2)                                       (3)              (4)
 #
 # (1) run rsnapshot backup
@@ -84,7 +84,7 @@ def rsnapshot_run(config_file=DEFAULT_RSNAPSHOT_CONFIG_FILE, retain_level='alpha
                 truncate=True)
 
         #/* (3) */
-        #/* note: rsnapreport.pl must be placed in the pomeep root directory.*/
+        #/* note: rsnapreport.pl must be placed in the ycspomeep root directory.*/
         print('INFO: generating rsnapshot summary...')
 
         rsnapreport_pl = os.path.realpath(

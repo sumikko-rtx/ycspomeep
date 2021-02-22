@@ -5,7 +5,7 @@ import os
 import cmd_tail_n
 import re
 from rsnapconfig_get_retain_levels import rsnapconfig_get_retain_levels
-from configs.other_settings import DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE
+from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE
 
 
 #/* check disk usage from snapshot_root, which defined in given rsnapshot config file

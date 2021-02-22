@@ -7,7 +7,7 @@ from rsnapconfig_get_lockfile import rsnapconfig_get_lockfile
 from file_modified_since import file_modified_since
 from configs.email_settings import NOTIFY_SOFT_BACKUP_SECONDS_LIMIT,\
     NOTIFY_HARD_BACKUP_SECONDS_LIMIT
-from configs.other_settings import DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE
+from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE
 
 
 #
@@ -20,7 +20,7 @@ def rsnapshot_check_running_progress(complete=False, negate=False):
     lockfile = rsnapconfig_get_lockfile()
 
     #/* the file is generated during backup process
-    # * (by rsnapshot_run.update)
+    # * (by rsnapshot_run.update_from_git)
     # */
     intermediate_logfile = DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE
 

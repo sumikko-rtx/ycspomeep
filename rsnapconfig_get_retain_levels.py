@@ -2,10 +2,10 @@
 import sys
 from simple_argparse import simple_argparse
 import os
-from configs.other_settings import DEFAULT_RSNAPSHOT_CONFIG_FILE
+from constants import DEFAULT_RSNAPSHOT_CONFIG_FILE
 from rsnapconfig_get_snapshot_root import rsnapconfig_get_snapshot_root
 
-#/* Note: this is a temporary implementation and will be replaced in future version of pomeep */
+#/* Note: this is a temporary implementation and will be replaced in future version of ycspomeep */
 
 #/* get all retain names from DEFAULT_RSNAPSHOT_CONFIG_FILE */
 
