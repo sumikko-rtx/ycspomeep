@@ -27,6 +27,9 @@ def system_cmd(cmd,
                output_append=False,
                error_append=False,
 
+               output_strip_whitespace=True,
+               error_strip_whitespace=True,
+
                raise_exception=True,
                ):
     '''
@@ -57,7 +60,7 @@ def system_cmd(cmd,
         cmd = cmd.split(sep)
     cmd = list(cmd)
 
-    #/* update form system's envs */
+    #/* update_from_git form system's envs */
     envs.update(os.environ)
 
     #/* use C locale */
@@ -178,6 +181,13 @@ def system_cmd(cmd,
             error = error.decode(encoding)
         else:
             error = ''
+
+        #/* strip leading/trailing whitespace */
+        if output_strip_whitespace:
+            output = output.strip()
+
+        if error_strip_whitespace:
+            error = error.strip()
 
         #/* print how long does it take to run this command */
         elapsed_n_seconds = t2 - t1
