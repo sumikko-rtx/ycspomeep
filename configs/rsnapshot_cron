@@ -25,7 +25,7 @@
 # |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
 # |  |  |  |  |
 # *  *  *  *  *   user-name  command to be executed
-  0 21  *  *  1-6 root       /usr/bin/python3 /var/pomeep/rsnapshot_run.py
-*/1  *  *  *  *   root       /usr/bin/python3 /var/pomeep/rsnapshot_monitor.py
-  0  0  *  *  0   root       /usr/bin/python3 /var/pomeep/disk_monitor.py
+  0 21  *  *  1-6 root       /usr/bin/python3 /var/ycspomeep/rsnapshot_run.py
+*/1  *  *  *  *   root       /usr/bin/python3 /var/ycspomeep/rsnapshot_monitor.py
+  0  0  *  *  0   root       /usr/bin/python3 /var/ycspomeep/disk_monitor.py
 
