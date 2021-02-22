@@ -129,7 +129,7 @@ This currently the newest version available.
     #this_py_dir = PROGRAM_DIR
 
     cmd = [
-        'rsync', '-avn',
+        'rsync', '-av',
         '--exclude', '.git/',
         '--exclude', 'configs/',
         '--exclude', this_py_file,
@@ -143,7 +143,7 @@ This currently the newest version available.
         raise_exception=True,
     )
 
-    #print(output)
+    print('ycspomeep is successfully updated to version {0}'.format(to_target_version))
     
 
 if __name__ == '__main__':

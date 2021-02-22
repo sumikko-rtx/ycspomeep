@@ -5,14 +5,14 @@ import tempfile
 #/* (technician use only)
 # * List of default search filenames.
 # */
-CONFIGS_DIR = os.path.realpath(
+
+PROGRAM_DIR = os.path.realpath(
     os.path.dirname(__file__)
 )
 
-PROGRAM_DIR = os.path.realpath(
-    os.path.join(CONFIGS_DIR, os.pardir)
+CONFIGS_DIR =  os.path.realpath(
+    os.path.join(PROGRAM_DIR, 'configs')
 )
-
 
 TEMP_DIR = os.path.realpath(
     tempfile.gettempdir()
@@ -34,7 +34,6 @@ DEFAULT_OTHER_SETTINGS_FILE = os.path.realpath(
     os.path.join(CONFIGS_DIR, 'other_settings.update_from_git')
 )
 
-
 DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE = os.path.realpath(
     os.path.join(TEMP_DIR, 'plc_rsnapshot_output.log')
 )
@@ -42,8 +41,6 @@ DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE = os.path.realpath(
 DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE = os.path.realpath(
     os.path.join(TEMP_DIR, 'plc_rsnapshot_error.log')
 )
-
-
 
 DEFAULT_DISK_CHECKING_LOCKFILE = os.path.realpath(
     os.path.join(TEMP_DIR, 'plc_disk_checking.pid')
