@@ -137,6 +137,7 @@ This currently the newest version available.
             '--exclude', '.git/',
             '--exclude', 'configs/',
             '--exclude', this_py_file,
+            '--delete',
             '{0}/'.format(ycspomeep_at_tmpdir),
             '{0}/'.format(this_py_dir),
         ]
