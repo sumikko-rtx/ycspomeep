@@ -137,7 +137,6 @@ This currently the newest version available.
             '--exclude', '.git/',
             '--exclude', 'configs/',
             '--exclude', this_py_file,
-            '--delete',
             '{0}/'.format(ycspomeep_at_tmpdir),
             '{0}/'.format(this_py_dir),
         ]
@@ -151,9 +150,10 @@ This currently the newest version available.
         print('ycspomeep is successfully updated to version {0}!!!'.format(to_target_version))
     
     else:
-        print('ycspomeep is already the newest version {0}!!! Nothing to do!!!'.format(to_target_version))
+        print('git is already the newest version {0}!!! Nothing to do!!!'.format(to_target_version))
     
         
 
 if __name__ == '__main__':
     print(simple_argparse(update_from_git, sys.argv[1:]))
+

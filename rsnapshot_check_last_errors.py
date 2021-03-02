@@ -5,7 +5,7 @@ import os
 import cmd_tail_n
 import re
 from rsnapconfig_get_retain_levels import rsnapconfig_get_retain_levels
-from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE
+from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE, DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE
 
 
 #/* check disk usage from snapshot_root, which defined in given rsnapshot config file
@@ -25,7 +25,7 @@ def rsnapshot_check_last_errors():
     #/* list of possible log files */
     possible_log_files = [
 
-        #/* from DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE  */
+        DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE,
         DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE,
 
         #/* from rsnapshot_root/alpha.0 */
@@ -37,38 +37,39 @@ def rsnapshot_check_last_errors():
     #/************************************************************************/
 
     for j, x in enumerate(possible_log_files):
-
+    
+        print('INFO: reading {0}'.format(x))
+        
         try:
 
             with open(x, 'r') as f:
 
                 #/* start at the last line of file */
-                lines = f.readlines()
+                lines = f.read().split('\n')
                 j = len(lines) - 1
 
-                while j > 0:
+                while j >= 0:
 
                     line = lines[j]
                     #line = line.lower()
                     line = line.strip()
+                    
+                    #print(j,line)
 
                     #/* from rsnapreport.pl: colon must be follower by single space!!! */
                     if line.startswith('ERROR: ') or line.startswith('rsync error: '):
                         rsnapshot_errors.append(line)
 
-                    #/* reach end of line??? */
-                    if not line:
-                        break
-
                     #/* prev line */
                     j = j - 1
-                    
-            #/* read success, exit immediately */
-            break
 
         except Exception as e:
             if j > 0:
                 print('WARNING: cannot read {0}: {1}'.format(x, e))
+
+
+    #/* remove dupluicate rsnapshot_errors */
+    rsnapshot_errors = list(set(rsnapshot_errors))
 
     return rsnapshot_errors
 
