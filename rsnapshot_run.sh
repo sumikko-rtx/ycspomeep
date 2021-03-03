@@ -28,7 +28,7 @@ THIS_SCRIPT_DIR="$(dirname "$THIS_SCRIPT_FILE")"
 #echo "THIS_SCRIPT_DIR=$THIS_SCRIPT_DIR"
 
 
-RSNAPSHOT_CONFIG_FILE="$(/usr/bin/python3 -c "from constants import DEFAULT_RSNAPSHOT_CONFIG_FILE; print(DEFAULT_RSNAPSHOT_CONFIG_FILE)")"
+RSNAPSHOT_CONFIG_FILE="$(cd "$THIS_SCRIPT_DIR" && /usr/bin/python3 -c "from constants import DEFAULT_RSNAPSHOT_CONFIG_FILE; print(DEFAULT_RSNAPSHOT_CONFIG_FILE)")"
 RSNAPSHOT_SNAPSHOT_ROOT="$(/usr/bin/python3 "$THIS_SCRIPT_DIR/rsnapconfig_get_snapshot_root.py")"
 RSNAPSHOT_RETAIN_LEVEL="$(/usr/bin/python3 "$THIS_SCRIPT_DIR/rsnapconfig_get_retain_levels.py" --idx 0)"
 #echo "RSNAPSHOT_CONFIG_FILE=$RSNAPSHOT_CONFIG_FILE"
