@@ -51,5 +51,5 @@ DEFAULT_DISK_ERROR_LOCKFILE = os.path.realpath(
 )
 
 #/* important: set the current ycspomeep program version here */
-CURRENT_VERSION = "v2703b"
+CURRENT_VERSION = "v2709b"
 
