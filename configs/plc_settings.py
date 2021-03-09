@@ -6,7 +6,7 @@ BACKUP_SERVER_NAME = 'MEEPMEEP'  # <<<
 
 #/* ip or hostname of a PLC
 # */
-PLC_HOST = '127.0.0.1'  # <<<
+PLC_HOST = '192.168.1.51'  # <<<
 
 
 #/* Port number to a PLC (502)
