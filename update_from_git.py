@@ -9,12 +9,19 @@ from constants import TEMP_DIR, CURRENT_VERSION
 
 def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
                     branch='main',
-                    to_target_version='',
+                    to_version='',
+                    reset_configs=False,
                     check_new_version=False):
 
     #/*---------------------------------------------------------------------*/
 
     #/* note: the following procedures requires git */
+
+    #/* this script file and dir */
+    this_py_file = os.path.basename(__file__)
+    this_py_dir = os.path.realpath(os.path.dirname(__file__))
+    #this_py_dir = PROGRAM_DIR
+
 
     #/* tmp directory stores the git-cloned data */
     ycspomeep_at_tmpdir = os.path.join(TEMP_DIR, 'plc_ycspomeep_git_repository')
@@ -64,20 +71,20 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
     )
 
     #/* get the first line form the last git_output */
-    if not to_target_version:
+    if not to_version:
             
-        to_target_version = ''
+        to_version = ''
         tmp = git_output.splitlines()
     
         if tmp:
-            to_target_version = tmp[0]
+            to_version = tmp[0]
     
         else:
             raise Exception(
                 'git was worked properly but empty version string returned.')
 
     #/* is that the latest version? */
-    have_new_version = (CURRENT_VERSION != to_target_version)
+    have_new_version = (CURRENT_VERSION != to_version)
 
     #/*---------------------------------------------------------------------*/
 
@@ -91,21 +98,22 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
         if have_new_version:
 
             print('''
-The new version of ycspomeep {0} has been released!
+The new version of ycspomeep {1} has been released!
 
-You can download this version using the following git command(s):
+You can upgrade to this version using the following command(s):
 
-    git clone --branch {1} {2}
-    git checkout {0}
+    '{0}' '{1}' --to-version '{2}' --branch '{3}' --url '{4}'
     
 '''.format(
-                to_target_version, branch, url
+                sys.executable,
+                this_py_file, 
+                to_version, branch, url
             ))
 
         else:
 
             print('''
-This currently the newest version available.
+This is currently the newest version available.
                   ''')
             
         return None
@@ -114,7 +122,7 @@ This currently the newest version available.
 
     #/* Otherwise, do automatic update
     # *
-    # * (1) git checkout <to_target_version>
+    # * (1) git checkout <to_version>
     # *
     # * (2) rsync -av --delete 
     # *         --exclude configs/ --exclude .git/ --exclude update.py
@@ -123,34 +131,38 @@ This currently the newest version available.
     if have_new_version:
         
         unused, unused, unused, unused = system_cmd(
-            cmd=['git', 'checkout', to_target_version],
+            cmd=['git', 'checkout', to_version],
             cwd=ycspomeep_at_tmpdir,
             raise_exception=True,
         )
     
-        this_py_file = os.path.basename(__file__)
-        this_py_dir = os.path.realpath(os.path.dirname(__file__))
-        #this_py_dir = PROGRAM_DIR
-    
         cmd = [
             'rsync', '-rv',
             '--exclude', '.git/',
-            '--exclude', 'configs/',
+        ]
+
+        if not reset_configs:
+            cmd.extend(['--exclude', 'configs/'])
+
+        cmd.extend([
             '--exclude', this_py_file,
             '{0}/'.format(ycspomeep_at_tmpdir),
             '{0}/'.format(this_py_dir),
-        ]
+        ])
     
         unused, output, unused, unused = system_cmd(
             cmd=cmd,
             cwd=ycspomeep_at_tmpdir,
             raise_exception=True,
         )
+        
+        if reset_configs:
+            print('Your ycspomeep configuration has been reset to default!!!'.format(to_version))
 
-        print('ycspomeep is successfully updated to version {0}!!!'.format(to_target_version))
+        print('ycspomeep has been successfully updated to version {0}!!!'.format(to_version))
     
     else:
-        print('git is already the newest version {0}!!! Nothing to do!!!'.format(to_target_version))
+        print('Your ycspomeep is already the newest version {0}!!! Nothing to do!!!'.format(to_version))
     
         
 
