@@ -4,6 +4,9 @@ from simple_argparse import simple_argparse
 import os
 import shutil
 from str_2_bool import str_2_bool
+from system_cmd import system_cmd
+import tempfile
+import getopt
 
 
 #
@@ -27,8 +30,21 @@ def __cmd_rm_f(*filenames):
 
         except Exception as e:
 
-            #if os.path.isdir(x) and not os.path.islink(x):
+#             #/* fast rmtree method: rsync -a --delete empty_dir/ x/ */
+#             empty_dir = tempfile.mkdtemp()
+#             x = '{0}{1}'.format(x, os.sep)
+#  
+#             #print(['rsync', '-a', '--delete',
+#             #         empty_dir, x])
+#  
+#             system_cmd(
+#                 cmd=['rsync', '-a', '--delete',
+#                      empty_dir, x],
+#             )
+#             shutil.rmtree(empty_dir)
+
             shutil.rmtree(x)
+
 
 
 def cmd_rm_r(*filenames, force=False):
@@ -44,4 +60,11 @@ def cmd_rm_r(*filenames, force=False):
 
 
 if __name__ == '__main__':
-    print(simple_argparse(cmd_rm_r, sys.argv[1:]))
+    
+    #/* match the opengroup's rm specification */
+    try:
+        parsed_args, unparsed_args = getopt.getopt(sys.argv[1:], 'fiRr')
+    except Exception as e:
+        parsed_args, unparsed_args = [], sys.argv[1:]
+
+    print(simple_argparse(cmd_rm_r, unparsed_args))

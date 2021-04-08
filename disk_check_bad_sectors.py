@@ -2,7 +2,8 @@
 import sys
 from simple_argparse import simple_argparse
 from disk_check_smart_attributes import disk_check_smart_attributes
-from configs.email_settings import NOTIFY_DISK_MAX_BAD_SECTORS
+
+from constants import NOTIFY_DISK_MAX_BAD_SECTORS
 
 
 #
@@ -11,6 +12,10 @@ from configs.email_settings import NOTIFY_DISK_MAX_BAD_SECTORS
 #       since the are some offline smart attribute need to be update_from_git
 #
 def disk_check_bad_sectors(preload_disks=[], negate=False):
+
+    #/* required constants in this code */
+
+    #/*---------------------------------------------------------------------*/
 
     #/* load smart attribute data first... */
     disk_check_smart_attributes(preload_disks)

@@ -8,11 +8,12 @@ from rsnapshot_check_snapshot_root_usage import rsnapshot_check_snapshot_root_us
 from rsnapshot_check_running_progress import rsnapshot_check_running_progress
 
 from rsnapshot_terminate import rsnapshot_terminate
-from rsnapconfig_get_snapshot_root import rsnapconfig_get_snapshot_root
+from rsnapconfig_getparam_snapshot_root import rsnapconfig_getparam_snapshot_root
 from email_report2 import email_report2
-from configs.plc_settings import PLC_RWADDR_BACKUP_STATUS,\
+from constants import PLC_RWADDR_BACKUP_STATUS,\
     PLC_RWCODE_BACKUP_STATUS_FAILED, PLC_RWCODE_BACKUP_STATUS_OK,\
-    PLC_RWCODE_BACKUP_STATUS_IN_PROGRESS
+    PLC_RWCODE_BACKUP_STATUS_IN_PROGRESS, PLC_LBADDR_SERVER_PRESENCE_DETECT,\
+    PLC_LBCODE_SERVER_PRESENT
 from rsnapshot_check_last_errors import rsnapshot_check_last_errors
 
 
@@ -23,8 +24,15 @@ def rsnapshot_monitor():
 
     #/*---------------------------------------------------------------------*/
 
+    #/* presence detect */
+
+    plc_report(write_lb_values=[
+               PLC_LBADDR_SERVER_PRESENCE_DETECT, PLC_LBCODE_SERVER_PRESENT])
+
+    #/*---------------------------------------------------------------------*/
+
     #/* monitor rsnapshot snapshot_root usage */
-    snapshot_root = rsnapconfig_get_snapshot_root()
+    snapshot_root = rsnapconfig_getparam_snapshot_root()
     have_snapshot_root_exist, have_low_disk_space, bytes_used, bytes_free, bytes_total, percent_used, percent_free = rsnapshot_check_snapshot_root_usage(
         negate=False)
 

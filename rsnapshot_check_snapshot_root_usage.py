@@ -2,8 +2,8 @@
 import sys
 from simple_argparse import simple_argparse
 import psutil
-from rsnapconfig_get_snapshot_root import rsnapconfig_get_snapshot_root
-from configs.email_settings import NOTIFY_MAX_DISK_USED_PERCENT
+from rsnapconfig_getparam_snapshot_root import rsnapconfig_getparam_snapshot_root
+from constants import NOTIFY_MAX_DISK_USED_PERCENT
 
 
 #/* check disk usage from snapshot_root, which defined in given rsnapshot config file
@@ -12,7 +12,7 @@ from configs.email_settings import NOTIFY_MAX_DISK_USED_PERCENT
 def rsnapshot_check_snapshot_root_usage(negate=False):
 
     #/* from rsnapshot config file */
-    snapshot_root = rsnapconfig_get_snapshot_root()
+    snapshot_root = rsnapconfig_getparam_snapshot_root()
 
     #/* True if snapshot_root exists */
     have_snapshot_root_exist = False

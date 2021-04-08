@@ -27,7 +27,11 @@ use English '-no_match_vars';
 
 my $bufsz = 2;
 my %bkdata=();
+
+# --- modification start ---
 my @errors=();
+my @warnings=();
+# --- modification end ---
 
 sub pretty_print(){
 	my $ofh = select(STDOUT);
@@ -114,16 +118,53 @@ while (my $line = nextLine(\@rsnapout)){
 			elsif($line =~ /File list transfer time:\s+(.+)/){
 				$bkdata{$source}{'file_list_trans_time'}=$1;
 			}
-			elsif($line =~ /^(rsync error|ERROR): /){ push(@errors,"$source $line"); } # we encountered an rsync error
+			
+			# --- modification start ---
+	
+			# we encountered rsync error(s)
+			elsif($line =~ /^(rsync error|ERROR): /){
+				$line =~ s/^(ERROR): //g;
+				$line =~ s/^\s+|\s+$//g; #<< remove both leading and trailing whitespace(s)
+				push(@errors,"$source $line");
+			} 
+			
+			# --- modification end ---
 		}
 	}
-	elsif($line =~ /^(rsync error|ERROR): /){ push(@errors,$line); } # we encountered an rsync error
+	
+	# --- modification start ---
+	
+	# we encountered warning(s)
+	elsif($line =~ /^(rsync error|WARNING): /){
+		$line =~ s/^(WARNING): //g;
+		$line =~ s/^\s+|\s+$//g; #<< remove both leading and trailing whitespace(s)
+		push(@warnings,$line);
+	} 
+	
+	# we encountered error(s)
+	elsif($line =~ /^(ERROR): /){
+		$line =~ s/^(ERROR): //g;
+		$line =~ s/^\s+|\s+$//g; #<< remove both leading and trailing whitespace(s)
+		push(@errors,$line);
+	}
+	
+	# --- modification end ---
+	
 }
 
+# --- modification start ---
+print "\n";
 pretty_print();
-if(scalar @errors > 0){
-	print "\nERRORS\n";
-	print join("\n",@errors);
-	print "\n";
-}
 
+printf "\n%i WARNING(S)\n\n", scalar @warnings ;
+if(scalar @warnings > 0){
+	print join("\n",@warnings);
+}
+print "\n";
+
+printf "\n%i ERROR(S)\n\n", scalar @errors ;
+if(scalar @errors > 0){
+	print join("\n",@errors);
+}
+print "\n";
+# --- modification end ---

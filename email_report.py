@@ -6,8 +6,8 @@ import os
 import datetime
 from cmd_touch import cmd_touch
 from file_modified_since import file_modified_since
-from configs.plc_settings import BACKUP_SERVER_NAME
-from configs.email_settings import SMTP_HOST, SMTP_PORT_NUMBER, SMTP_TRY_SSL_TLS,\
+from constants import BACKUP_SERVER_NAME
+from constants import SMTP_HOST, SMTP_PORT_NUMBER, SMTP_TRY_SSL_TLS,\
     SMTP_TIMEOUT_SECONDS, RECIPIENT_EMAILS, SENDER_EMAIL, SENDER_LOGIN_NAME,\
     SENDER_LOGIN_PASSWORD
 from constants import TEMP_DIR

@@ -10,10 +10,11 @@ from plc_report import plc_report
 from email_report2 import email_report2
 from smart_self_test import smart_self_test
 import time
-from configs.email_settings import NOTIFY_DISK_MAX_BAD_SECTORS,\
+from constants import NOTIFY_DISK_MAX_BAD_SECTORS,\
     NOTIFY_DISK_MIN_TEMP, NOTIFY_DISK_MAX_TEMP, NOTIFY_DISK_MAX_POWER_ON_HOURS
-from configs.plc_settings import PLC_RWADDR_SERVER_STATUS,\
-    PLC_RWCODE_SERVER_STATUS_OK, PLC_RWCODE_SERVER_STATUS_FAILED
+from constants import PLC_RWADDR_SERVER_STATUS,\
+    PLC_RWCODE_SERVER_STATUS_OK, PLC_RWCODE_SERVER_STATUS_FAILED,\
+    PLC_LBADDR_SERVER_PRESENCE_DETECT, PLC_LBCODE_SERVER_PRESENT
 
 
 #/* return disk model name string */
@@ -35,7 +36,7 @@ def disk_monitor():
     warning_msgs = []
     error_msgs = []
     disks = []
-
+    
     #/*---------------------------------------------------------------------*/
 
     #/* smart_scan_open and smart_self_test may raise SystemCmdException

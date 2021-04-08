@@ -2,7 +2,7 @@
 import sys
 from simple_argparse import simple_argparse
 from disk_check_smart_attributes import disk_check_smart_attributes
-from configs.email_settings import NOTIFY_DISK_MAX_TEMP, NOTIFY_DISK_MIN_TEMP
+from constants import NOTIFY_DISK_MAX_TEMP, NOTIFY_DISK_MIN_TEMP
 
 
 #

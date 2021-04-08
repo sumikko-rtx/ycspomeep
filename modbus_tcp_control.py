@@ -148,5 +148,15 @@ def modbus_tcp_control(host,
 
 
 if __name__ == '__main__':
+    '''
+    modbus_tcp_control(host='172.16.1.52',
+                       port_number=503,
+                       slave_unit=1,
+                       start_address=9,
+                       write_coils=True,
+                       write_holding_registers=False,
+                       write_values=[False],
+                       )
+    '''                       
     print(simple_argparse(modbus_tcp_control, sys.argv[1:]))
 

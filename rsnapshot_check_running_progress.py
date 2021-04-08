@@ -3,10 +3,10 @@ import sys
 from simple_argparse import simple_argparse
 import os
 import re
-from rsnapconfig_get_lockfile import rsnapconfig_get_lockfile
 from file_modified_since import file_modified_since
-from configs.email_settings import NOTIFY_SOFT_BACKUP_SECONDS_LIMIT,\
-    NOTIFY_HARD_BACKUP_SECONDS_LIMIT
+from constants import NOTIFY_SOFT_BACKUP_SECONDS_LIMIT,\
+    NOTIFY_HARD_BACKUP_SECONDS_LIMIT,\
+    DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE
 from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE
 
 
@@ -17,7 +17,7 @@ from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE
 def rsnapshot_check_running_progress(complete=False, negate=False):
 
     #/* this lockfile is generated during rsnapshot */
-    lockfile = rsnapconfig_get_lockfile()
+    backup_in_progress_lockfile = DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE
 
     #/* the file is generated during backup process
     # * (by rsnapshot_run.update_from_git)
@@ -34,7 +34,7 @@ def rsnapshot_check_running_progress(complete=False, negate=False):
     s = 0
 
     #/* True if rsnapshot is running, false otherwise */
-    have_rsnapshot_running = bool(os.path.exists(lockfile))
+    have_rsnapshot_running = bool(os.path.exists(backup_in_progress_lockfile))
 
     #/* True if duration_seconds reaches NOTIFY_SOFT_BACKUP_SECONDS_LIMIT */
     have_rsnapshot_time_reach_soft_limit = False
@@ -77,7 +77,7 @@ def rsnapshot_check_running_progress(complete=False, negate=False):
 
         try:
 
-            duration_total_seconds = file_modified_since(lockfile)
+            duration_total_seconds = file_modified_since(backup_in_progress_lockfile)
 
             #/* https://stackoverflow.com/questions/775049/how-do-i-convert-seconds-to-hours-minutes-and-seconds */
             m, s = divmod(duration_total_seconds, 60)

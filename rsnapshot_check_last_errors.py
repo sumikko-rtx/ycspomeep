@@ -2,8 +2,6 @@
 import sys
 from simple_argparse import simple_argparse
 import os
-import cmd_tail_n
-import re
 from rsnapconfig_get_retain_levels import rsnapconfig_get_retain_levels
 from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE, DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE
 
@@ -56,19 +54,20 @@ def rsnapshot_check_last_errors():
                     
                     #print(j,line)
 
-                    #/* from rsnapreport.pl: colon must be follower by single space!!! */
-                    if line.startswith('ERROR: ') or line.startswith('rsync error: '):
+                    #/* Find the line starts with "ERROR: " only!!!
+                    # * (colon followed by single space)
+                    # */
+                    if line.startswith('ERROR: '):
                         rsnapshot_errors.append(line)
 
                     #/* prev line */
                     j = j - 1
 
         except Exception as e:
-            if j > 0:
-                print('WARNING: cannot read {0}: {1}'.format(x, e))
+            pass
 
 
-    #/* remove dupluicate rsnapshot_errors */
+    #/* remove duplicated rsnapshot_errors */
     rsnapshot_errors = list(set(rsnapshot_errors))
 
     return rsnapshot_errors
