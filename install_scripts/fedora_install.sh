@@ -44,6 +44,7 @@ dnf -y update
 
 
 # install software
+# util-linux provides mountpoint
 dnf -y install \
 	smartmontools \
 	NetworkManager \
@@ -57,9 +58,10 @@ dnf -y install \
 	python3-psutil \
 	openssh \
 	openssh-clients \
-	openssh-server \
 	git \
-	`true "end of package list***"`
+	util-linux \
+	psmisc \
+	`true "*** end of package list ***"`
 
 # install modbus_tk
 umask 022

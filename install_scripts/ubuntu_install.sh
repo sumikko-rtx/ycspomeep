@@ -43,7 +43,8 @@ dpkg --configure -a
 apt -y update
 apt -y upgrade
 
-# install software for PLC program
+# install software
+# util-linux provides mountpoint
 apt -yq install \
 	smartmontools \
 	network-manager \
@@ -57,9 +58,10 @@ apt -yq install \
 	python3-psutil \
 	ssh \
 	openssh-client \
-	openssh-server \
 	git \
-	`true "end of package list***"`
+	util-linux \
+	psmisc \
+	`true "*** end of package list ***"`
 
 # install modbus_tk
 umask 022
