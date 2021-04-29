@@ -7,7 +7,7 @@ import importlib
 
 
 #/* important: set the current ycspomeep program version here */
-CURRENT_VERSION = "v2808b"
+CURRENT_VERSION = "v2828b"
 
 #/*---------------------------------------------------------------------*/
 
@@ -65,6 +65,7 @@ DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE = os.path.realpath(
 
 
 
+
 DEFAULT_DISK_CHECKING_LOCKFILE = os.path.realpath(
     os.path.join(TEMP_DIR, 'plc_disk_checking.pid')
 )
@@ -75,7 +76,6 @@ DEFAULT_DISK_ERROR_LOCKFILE = os.path.realpath(
 
 
 #/*---------------------------------------------------------------------*/
-
 
 #/* --- default values from configs/email_settings.py --- */
 try:
@@ -188,6 +188,7 @@ PLC_LBCODE_SERVER_PRESENT = getattr(x, 'PLC_LBCODE_SERVER_PRESENT',
 
 PLC_LBCODE_SERVER_ABSENT = getattr(x, 'PLC_LBCODE_SERVER_ABSENT',
                                    False)
+
 
 
 
@@ -320,3 +321,24 @@ DEEPLY_COMPARE_FILES = getattr(x, 'DEEPLY_COMPARE_FILES',
 # */
 NOTIFY_MAX_MISSING_FILES = getattr(x, 'NOTIFY_MAX_MISSING_FILES',
                                    1024)
+
+
+#/*---------------------------------------------------------------------*/
+
+#/* --- default values from configs/disk_isolate_settings.py --- */
+try:
+    x = importlib.import_module('configs.disk_isolate_settings')
+except Exception as e:
+    x = None
+
+
+#/* True to enable backup disk isolaton; False otherwise
+# */
+ISOLATE_DISKS_ENABLE = getattr(x, 'ISOLATE_DISKS_ENABLE',
+                               False)
+
+ISOLATE_DISKS = getattr(x, 'ISOLATE_DISKS',
+                        {})
+
+ISOLATE_MDADM_ARRAYS = getattr(x, 'ISOLATE_MDADM_ARRAYS',
+                               {})

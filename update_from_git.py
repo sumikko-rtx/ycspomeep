@@ -5,6 +5,7 @@ from system_cmd import system_cmd
 import os
 from cmd_rm_r import cmd_rm_r
 from constants import TEMP_DIR, CURRENT_VERSION
+from cmd_mkdir_p import cmd_mkdir_p
 
 
 def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
@@ -29,10 +30,11 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
 
     #/* git refuses cloning if ycspomeep_at_tmpdir is not empty */
     cmd_rm_r(ycspomeep_at_tmpdir, force=True)
-    try:
-        os.makedirs(ycspomeep_at_tmpdir)
-    except FileExistsError as e:
-        pass
+    cmd_mkdir_p(ycspomeep_at_tmpdir)
+#     try:
+#         os.makedirs(ycspomeep_at_tmpdir)
+#     except FileExistsError as e:
+#         pass
     
     #/* get from github repository */
     unused, unused, unused, unused = system_cmd(

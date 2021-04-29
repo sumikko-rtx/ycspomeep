@@ -15,7 +15,7 @@ def str_2_bool(input_str):
     if v in ['y', 'yes', 't', 'true', 'on', '1']:
         v = True
 
-    elif v in ['f', 'no', 'f', 'false', 'off', '0']:
+    elif v in ['n', 'no', 'f', 'false', 'off', '0']:
         v = False
 
     else:
