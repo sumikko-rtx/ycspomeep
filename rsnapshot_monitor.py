@@ -12,8 +12,8 @@ from rsnapconfig_getparam_snapshot_root import rsnapconfig_getparam_snapshot_roo
 from email_report2 import email_report2
 from constants import PLC_RWADDR_BACKUP_STATUS,\
     PLC_RWCODE_BACKUP_STATUS_FAILED, PLC_RWCODE_BACKUP_STATUS_OK,\
-    PLC_RWCODE_BACKUP_STATUS_IN_PROGRESS, PLC_LBADDR_SERVER_PRESENCE_DETECT,\
-    PLC_LBCODE_SERVER_PRESENT
+    PLC_RWCODE_BACKUP_STATUS_IN_PROGRESS, PLC_RWADDR_SERVER_PRESENCE_DETECT,\
+    PLC_RWCODE_SERVER_PRESENT
 from rsnapshot_check_last_errors import rsnapshot_check_last_errors
 
 
@@ -26,8 +26,8 @@ def rsnapshot_monitor():
 
     #/* presence detect */
 
-    plc_report(write_lb_values=[
-               PLC_LBADDR_SERVER_PRESENCE_DETECT, PLC_LBCODE_SERVER_PRESENT])
+    plc_report(write_rw_values=[
+               PLC_RWADDR_SERVER_PRESENCE_DETECT, PLC_RWCODE_SERVER_PRESENT])
 
     #/*---------------------------------------------------------------------*/
 

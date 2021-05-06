@@ -152,11 +152,11 @@ PLC_RWADDR_BACKUP_STATUS = getattr(x, 'PLC_RWADDR_BACKUP_STATUS',
 PLC_RWADDR_SERVER_STATUS = getattr(x, 'PLC_RWADDR_SERVER_STATUS',
                                    1)
 
+PLC_RWADDR_BACKUP_HDD_ONOFF_STATUS = getattr(x, 'PLC_RWADDR_BACKUP_HDD_ONOFF_STATUS',
+                                             8)
 
-#/* list of backup status register address locations
-# * these are relative to PLC_LB_MIN
-# */
-PLC_LBADDR_SERVER_PRESENCE_DETECT = getattr(x, 'PLC_LBADDR_SERVER_PRESENCE_DETECT',
+
+PLC_RWADDR_SERVER_PRESENCE_DETECT = getattr(x, 'PLC_RWADDR_SERVER_PRESENCE_DETECT',
                                             9)
 
 
@@ -183,11 +183,20 @@ PLC_RWCODE_SERVER_STATUS_FAILED = getattr(x, 'PLC_RWCODE_SERVER_STATUS_FAILED',
 
 #/* These values will be set to address PLC_RWADDR_SERVER_PRESENCE_DETECT
 # */
-PLC_LBCODE_SERVER_PRESENT = getattr(x, 'PLC_LBCODE_SERVER_PRESENT',
-                                    True)
+PLC_RWCODE_BACKUP_HDD_ON = getattr(x, 'PLC_RWCODE_BACKUP_HDD_ON',
+                                   0)
 
-PLC_LBCODE_SERVER_ABSENT = getattr(x, 'PLC_LBCODE_SERVER_ABSENT',
-                                   False)
+PLC_RWCODE_BACKUP_HDD_OFF = getattr(x, 'PLC_RWCODE_BACKUP_HDD_OFF',
+                                    1)
+
+
+#/* These values will be set to address PLC_RWADDR_SERVER_PRESENCE_DETECT
+# */
+PLC_RWCODE_SERVER_PRESENT = getattr(x, 'PLC_LBCODE_SERVER_PRESENT',
+                                    0)
+
+PLC_RWCODE_SERVER_ABSENT = getattr(x, 'PLC_LBCODE_SERVER_ABSENT',
+                                   1)
 
 
 

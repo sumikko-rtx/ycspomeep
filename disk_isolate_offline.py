@@ -3,7 +3,7 @@ import os
 import sys
 from simple_argparse import simple_argparse
 from system_cmd import system_cmd
-from constants import ISOLATE_DISKS_ENABLE, ISOLATE_DISKS
+from constants import ISOLATE_DISKS_ENABLE, ISOLATE_DISKS, ISOLATE_MDADM_ARRAYS
 from disk_find_by_serial_numbers import disk_find_by_serial_numbers
 import psutil
 from cmd_umount import cmd_umount
@@ -13,8 +13,11 @@ from cmd_umount import cmd_umount
 
 
 
-#/* linux code to offline the disks */
-def __linux_disk_offline(device_filename):
+
+#/* --- turn off the disk --- */
+def __disk_offline(device_filename):
+
+    #/* NOTE: the following code is only appliable for Linux!!! */
 
     #/* on linux, extract sdX (X = a, b, ...) only from device_filename */
     sdX = device_filename.replace("/dev/", "")
@@ -48,17 +51,8 @@ def __linux_disk_offline(device_filename):
 
 
 
-
-
-def disk_isolate_offline():
-
-    #/* skip if ISOLATE_DISKS_ENABLE set to false */
-    if not ISOLATE_DISKS_ENABLE:
-        return
-
-    #/************************************************************************/
-
-    #/* --- handle for ISOLATE_DISKS --- */
+#/* --- handle for ISOLATE_DISKS --- */
+def __handle_offline_ISOLATE_DISKS():
     
     #print('ISOLATE_DISKS:', ISOLATE_DISKS)
     
@@ -102,14 +96,93 @@ def disk_isolate_offline():
 
 
         #/* TODO turn off the disks */
-        __linux_disk_offline(device_filename=target_device_filename)
+        __disk_offline(device_filename=target_device_filename)
 
-    #/************************************************************************/
+
+
+
+
+
+
+#
+# Raid example:
+#
+# ISOLATE_MDADM_ARRAYS = {
+#
+#     '/dev/md0': { # << device filename for MDADM array(/dev/md(n))
+#
+#         'disk_serial_numbers': [   # << a list of drive serial numbers to re-assemble an array
+#             '9HSSNTK8', 'L34MS67U'
+#         ],
+#
+#         # --- start of disk partitions list ---
+#
+#         'mount_point': '',         # << the mouting point
+#         'file_system_type': '',    # << file system type, matches mount(8)'s -t option
+#         'mount_options': '',       # << mount option, matches mount(8)'s -o option
+#
+#         # --- end of disk partitions list ---
+#     },
+# }
+#
+
+#/* --- handle for ISOLATE_MDADM_ARRAYS --- */
+def __handle_offline_ISOLATE_MDADM_ARRAYS():
     
+    #print('ISOLATE_MDADM_ARRAYS:', ISOLATE_MDADM_ARRAYS)
+
+    for md_device_filename, md_opts in dict(ISOLATE_MDADM_ARRAYS).items():
+
+        disk_serial_numbers = md_opts.get('disk_serial_numbers', [])
+        mount_point = md_opts.get('mount_point', '')
+        #file_system_type = md_opts.get('file_system_type', '')
+        #mount_options = md_opts.get('mount_options', '')
+
+        #/* find disks need to be offline */
+        target_disks = [x['device_filename'] for x in disk_find_by_serial_numbers(disk_serial_numbers)]
+
+        #/* umount mdadm array first!!! */
+        cmd_umount(mount_point, remove_mount_points=True)
+
+        #/* stop mdadm array */
+        #/* TODO is this sufficient to safely unmount mdadm array??? */
+        mdadm_stop_cmd = ['mdadm', '--stop', md_device_filename]
+        system_cmd(cmd=mdadm_stop_cmd, raise_exception=False)
+
+        #/* turn off the disks */
+        for x in target_disks:
+            __disk_offline(device_filename=x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#/* --- the main program --- */
+def disk_isolate_offline():
+
+    #/* skip if ISOLATE_DISKS_ENABLE set to false */
+    if not ISOLATE_DISKS_ENABLE:
+        return
+
+    #/* handle different types of disk offline */
+    __handle_offline_ISOLATE_DISKS()
+    __handle_offline_ISOLATE_MDADM_ARRAYS()
     
     #/* your drive(s) is now turned off.
     # * At that point the OS does not see this drive!!!
     # */
+
 
 
 
