@@ -7,7 +7,7 @@ import importlib
 
 
 #/* important: set the current ycspomeep program version here */
-CURRENT_VERSION = "v2828b"
+CURRENT_VERSION = "v2906b"
 
 #/*---------------------------------------------------------------------*/
 
