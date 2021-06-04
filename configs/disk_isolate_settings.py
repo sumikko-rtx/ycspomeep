@@ -8,7 +8,7 @@ ISOLATE_DISKS_ENABLE = False
 # * Please use mount, smartmontools or gnome-disk-utility to find the
 # * corresponding serial numbers, mount settings, and so on.
 # *
-# * If it leaves empty, no disk isolation performs!!!
+# * If ISOLATE_DISKS or ISOLATE_MDADM_ARRAYS leaves empty, no disk isolation performs!!!
 # */
 
 #
@@ -37,9 +37,9 @@ ISOLATE_DISKS = {
 #
 # Raid example:
 #
-# ISOLATE_MDADM_ARRAY = {
+# ISOLATE_MDADM_ARRAYS = {
 #
-#     '/dev/md0': { # << device filename for MDADM array(/dev/md(n))
+#     '/dev/md0': { # << device filename for MDADM array (e.g.: /dev/md0)
 #
 #         'disk_serial_numbers': [   # << a list of drive serial numbers to re-assemble an array
 #             '9HSSNTK8', 'L34MS67U'
