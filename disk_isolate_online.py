@@ -81,26 +81,40 @@ def __handle_online_ISOLATE_MDADM_ARRAYS():
         mount_options = md_opts.get('mount_options', '')
 
         #/* find disks need to be offline */
-        target_disks = [x['device_filename'] for x in disk_find_by_serial_numbers(disk_serial_numbers)]
+        target_disks = [x['device_filename']
+                        for x in disk_find_by_serial_numbers(disk_serial_numbers)]
 
-        #/* assemble mdadm array */
-        mdadm_assemble_cmd = ['mdadm', '--assemble', md_device_filename]
-        mdadm_assemble_cmd.extend(target_disks)
-                
-        while True:
-            system_cmd(cmd=mdadm_assemble_cmd,raise_exception=False)
-            if os.path.exists(md_device_filename):
-                break
-            time.sleep(10)
+        #/* assemble mdadm array
+        # * mdadm --assemble <md_device_filename> <disk1> <disk2> ...
+        # */
+        cmd = ['mdadm', '--assemble', md_device_filename]
+        cmd.extend(target_disks)
+        #print(cmd)
+        system_cmd(cmd=cmd, raise_exception=False)
 
-        #/* mount mdadm array */
+        #/* use mdadm --detail <md_device_filename> to check the mdadm settings
+        # *
+        # * exit statuses
+        # *
+        # * 0 The array is functioning normally.
+        # * 1 The array has at least one failed device.
+        # * 2 The array has multiple failed devices such that it is unusable.
+        # * 4 There was an error while trying to get information about the device
+        # */
+        cmd = ['mdadm', '--detail', md_device_filename]
+        rc, unused, unused, unused = system_cmd(cmd=cmd, raise_exception=True)
+
+        if rc >= 2:
+            raise Exception(
+                'mdadm --detail returned exit status: {0}'.format(rc))
+
+        #/* mount md_device_filename */
         cmd_mount(
             device_filename=md_device_filename,
             file_system_type=file_system_type,
             mount_point=mount_point,
             mount_options=mount_options,
         )
-
 
 
 

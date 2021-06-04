@@ -51,7 +51,9 @@ def disk_check_smart_attributes(preload_disks=[], negate=False):
                 attr_value = int(attr_data['value'])
                 attr_thresh = int(attr_data['thresh'])
                 attr_worst = int(attr_data['worst'])
-                attr_raw = int(attr_data['raw'])
+                
+                #/* no need to data-type conversion!!! we will check the raw data in the later steps!!! */
+                attr_raw = attr_data['raw']
 
                 #/* normal < threshold: hdd/ssd have problems */
                 #/* test */

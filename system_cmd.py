@@ -200,7 +200,6 @@ def system_cmd(cmd,
     #    raise KeyboardInterrupt
 
     except Exception as e:
-
         #/* in case of program not found error... */
         return_code = 1
         error = 'Cannot run command {0}: {1}'.format(cmd[0], str(e))

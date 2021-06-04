@@ -154,7 +154,7 @@ mount_backup_disks()
 
 	msg_info "turning on and mounting the backup disks..."
 	test "$rc" -eq 0 &&
-		"$PY3" "$THIS_SCRIPT_DIRNAME/disk_isolate_online.py" 2>&1 || exit 1
+		"$PY3" "$THIS_SCRIPT_DIRNAME/disk_isolate_online.py" 2>&1 #|| exit 1
 	rc="$?"
 	
 	
@@ -225,14 +225,12 @@ exit_program()
 		msg_error "$0 has encounted an error(s) (exit_status=$rc)"
 		msg_error "    see a log file $RSNAPSHOT_LOGFILE_TMP for more details"
 
-		# umount backup disk, if any
-		if test "$stage_no" -ge 2
-		then
-			umount_backup_disks
-		fi
 
 	fi
 
+
+	# umount backup disk, if any
+	umount_backup_disks
 
 	# clean up
 	rm -f "$THIS_SCRIPT_LOCKFILE" 2>&1
@@ -244,19 +242,15 @@ exit_program()
 
 
 interrupted=0
-handle_interrupt()
+handle_sigint()
 {
-	if test "$interrupted" -eq 0
+	if test "0" -eq 0
 	then
-		interrupted=1
-		if test "0" -eq 0
-		then
-			rc=1
-			stage_no="$(get_backup_stage_no)"
-			exit_program
-			msg_error "rsnapshot was interrupt by user! (at stage $stage_no)"
-		fi | report
-	fi
+		rc=1
+		stage_no="$(get_backup_stage_no)"
+		exit_program
+		msg_error "rsnapshot was interrupt by user! (at stage $stage_no)"
+	fi | report
 	exit 1
 }
 
@@ -264,10 +258,12 @@ handle_interrupt()
 
 
 
+
+
 # *** This is the key, handle CTRL+C errors!!! ***
-trap handle_interrupt INT
-trap handle_interrupt TERM
-#trap handle_interrupt KILL
+trap handle_sigint INT
+trap handle_sigint TERM
+
 
 
 
@@ -288,10 +284,11 @@ then
 	test "$rc" -eq 0 && backup # << OK
 	rc="$?"
 
-	set_backup_stage_no 3
-	test "$rc" -eq 0 && umount_backup_disks 
-	rc="$?"
+	#set_backup_stage_no 3
+	#test "$rc" -eq 0 && umount_backup_disks 
+	#rc="$?"
 
+	# exit_program will run umount_backup_disks
 	exit_program
 
 fi | report

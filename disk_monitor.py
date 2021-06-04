@@ -14,6 +14,8 @@ from constants import NOTIFY_DISK_MAX_BAD_SECTORS,\
     NOTIFY_DISK_MIN_TEMP, NOTIFY_DISK_MAX_TEMP, NOTIFY_DISK_MAX_POWER_ON_HOURS
 from constants import PLC_RWADDR_SERVER_STATUS,\
     PLC_RWCODE_SERVER_STATUS_OK, PLC_RWCODE_SERVER_STATUS_FAILED
+from disk_isolate_offline import disk_isolate_offline
+from disk_isolate_online import disk_isolate_online
 
 
 #/* return disk model name string */
@@ -36,6 +38,15 @@ def disk_monitor():
     error_msgs = []
     disks = []
     
+    #/*---------------------------------------------------------------------*/
+    
+    #/* turn on the backup disk if any */
+    try:
+        disk_isolate_online()
+        
+    except Exception as e:
+        warning_msgs.append('cannot turn on the backup disk(s) for health check: {0}'.format(str(e)))
+
     #/*---------------------------------------------------------------------*/
 
     #/* smart_scan_open and smart_self_test may raise SystemCmdException
@@ -90,7 +101,7 @@ def disk_monitor():
             #/* To minimize CPU time... */
             time.sleep(1)
 
-    #/* TODO handle for CTRL+C interrupt: stop running smart test */
+    #/* handle for CTRL+C interrupt: stop running smart test */
     except KeyboardInterrupt as e:
 
         warning_msgs.append('disk health check was interrupted by user')
@@ -122,7 +133,7 @@ def disk_monitor():
 
         #/* is smartctl enountered an error? */
         if not smart_attributes_ok:
-            error_msgs.append('{0}: cannot retrieve s.m.a.r.t. attributes!!! Try \'smartctl -A -d {1} -- {2}\' for details!!!'.format(
+            error_msgs.append('{0}: cannot retrieve s.m.a.r.t. attributes!!! Try \'smartctl -A -d {2} -- {1}\' for details!!!'.format(
                 __get_disk_model_string(disks[j]),
                 disks[j]['device_filename'],
                 disks[j]['device_type'],
@@ -214,6 +225,9 @@ def disk_monitor():
     else:
         print('INFO: all disk(s) is/are ok!!! continue to backup...')
 
+    #/* turn off the backup disk if any */
+    disk_isolate_offline()
+    
     #/*---------------------------------------------------------------------*/
 
     #/* report to plc */
@@ -226,7 +240,7 @@ def disk_monitor():
 
     #/*---------------------------------------------------------------------*/
 
-    #/*  eport to email recipients */
+    #/* report to email recipients */
     if bool(warning_msgs) or bool(error_msgs):
         email_report2(
             warning_msgs=warning_msgs,

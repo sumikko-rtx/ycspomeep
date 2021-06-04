@@ -7,7 +7,7 @@ import importlib
 
 
 #/* important: set the current ycspomeep program version here */
-CURRENT_VERSION = "v2906b"
+CURRENT_VERSION = "v3004b"
 
 #/*---------------------------------------------------------------------*/
 
@@ -154,7 +154,6 @@ PLC_RWADDR_SERVER_STATUS = getattr(x, 'PLC_RWADDR_SERVER_STATUS',
 
 PLC_RWADDR_BACKUP_HDD_ONOFF_STATUS = getattr(x, 'PLC_RWADDR_BACKUP_HDD_ONOFF_STATUS',
                                              8)
-
 
 PLC_RWADDR_SERVER_PRESENCE_DETECT = getattr(x, 'PLC_RWADDR_SERVER_PRESENCE_DETECT',
                                             9)
