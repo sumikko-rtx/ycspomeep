@@ -7,9 +7,24 @@ from constants import DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE
 
 import os
 import datetime
+from update_from_pkgmgr import update_from_pkgmgr
+import update_from_git
 
 
 def rsnapshot_pre():
+    
+    #/* Try to update os via package manager */
+    try:
+        update_from_pkgmgr()
+    except Exception as e:
+        pass
+    
+    #/* Try to update ycspomeep via git */
+    try:
+        update_from_git()
+    except Exception as e:
+        pass
+        
 
     #/* backup start, now create a inner lock file to indicate the progress */
     cmd_touch(DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE)
