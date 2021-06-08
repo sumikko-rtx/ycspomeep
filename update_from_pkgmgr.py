@@ -105,7 +105,7 @@ def update_from_pkgmgr(check_upgradable=False):
             )
     
             if rc == 0:
-                print('INFO: packages are successfully updated!!!')
+                print('INFO: package(s) are successfully updated!!!')
                 break
             
         if rc != 0:

@@ -8,7 +8,7 @@ from constants import DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE
 import os
 import datetime
 from update_from_pkgmgr import update_from_pkgmgr
-import update_from_git
+from update_from_git import update_from_git
 
 
 def rsnapshot_pre():
