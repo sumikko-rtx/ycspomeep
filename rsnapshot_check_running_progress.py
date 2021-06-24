@@ -4,9 +4,12 @@ from simple_argparse import simple_argparse
 import os
 import re
 from file_modified_since import file_modified_since
+
+from rsnapconfig_getparam_lockfile import rsnapconfig_getparam_lockfile
+
 from constants import NOTIFY_SOFT_BACKUP_SECONDS_LIMIT,\
-    NOTIFY_HARD_BACKUP_SECONDS_LIMIT,\
-    DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE
+    NOTIFY_HARD_BACKUP_SECONDS_LIMIT
+    
 from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE
 
 
@@ -17,7 +20,7 @@ from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE
 def rsnapshot_check_running_progress(complete=False, negate=False):
 
     #/* this lockfile is generated during rsnapshot */
-    backup_in_progress_lockfile = DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE
+    backup_in_progress_lockfile = rsnapconfig_getparam_lockfile()
 
     #/* the file is generated during backup process
     # * (by rsnapshot_run.update_from_git)

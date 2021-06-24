@@ -35,7 +35,7 @@ def rsnapshot_compare_files(deeply=False):
 
         #/* for type_ = local, ssh and rsync, use them directly */
         return_code, output, unused, unused = system_cmd(
-            cmd=['rsync', '--out-format=%i %n',
+            *['rsync', '--out-format=%i %n',
                  rsync_switches, srcdir, destdir],
             raise_exception=False,
         )

@@ -6,8 +6,7 @@ from system_cmd import system_cmd
 from file_list import file_list
 from constants import ISOLATE_DISKS_ENABLE, ISOLATE_DISKS, ISOLATE_MDADM_ARRAYS
 from disk_find_by_serial_numbers import disk_find_by_serial_numbers
-from cmd_mount import cmd_mount
-import time
+from cmd_future_mount import cmd_future_mount
 
 
 
@@ -32,7 +31,7 @@ def __disk_online():
 
         target_path = os.path.join(x, 'scan')
 
-        system_cmd(cmd=['echo', '- - -'],
+        system_cmd(*['echo', '- - -'],
                    output_file=target_path,
                    )
 
@@ -56,7 +55,7 @@ def __handle_online_ISOLATE_DISKS():
         for y, x in disk_partitions.items():
 
             #/* NOTE: must include /dev/sdX(Y), where Y = 1,2,3,.... */
-            cmd_mount(
+            cmd_future_mount(
                 device_filename='{0}{1}'.format(target_device_filename, y),
                 file_system_type=x.get('file_system_type'),
                 mount_point=x.get('mount_point'),
@@ -90,7 +89,7 @@ def __handle_online_ISOLATE_MDADM_ARRAYS():
         cmd = ['mdadm', '--assemble', md_device_filename]
         cmd.extend(target_disks)
         #print(cmd)
-        system_cmd(cmd=cmd, raise_exception=False)
+        system_cmd(*cmd, raise_exception=False)
 
         #/* use mdadm --detail <md_device_filename> to check the mdadm settings
         # *
@@ -102,14 +101,14 @@ def __handle_online_ISOLATE_MDADM_ARRAYS():
         # * 4 There was an error while trying to get information about the device
         # */
         cmd = ['mdadm', '--detail', md_device_filename]
-        rc, unused, unused, unused = system_cmd(cmd=cmd, raise_exception=True)
+        rc, unused, unused, unused = system_cmd(*cmd, raise_exception=True)
 
         if rc >= 2:
             raise Exception(
                 'mdadm --detail returned exit status: {0}'.format(rc))
 
         #/* mount md_device_filename */
-        cmd_mount(
+        cmd_future_mount(
             device_filename=md_device_filename,
             file_system_type=file_system_type,
             mount_point=mount_point,

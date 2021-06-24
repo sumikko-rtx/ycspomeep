@@ -1,20 +1,30 @@
 #!/usr/bin/env python3
 import sys
 from simple_argparse import simple_argparse
-import os
-import psutil
+from cmd_future_ps_list import cmd_future_ps_list
+from cmd_future_ps_children import cmd_future_ps_children
+from cmd_future_ps_terminate import cmd_future_ps_terminate
+
 from constants import DEFAULT_RSNAPSHOT_CONFIG_FILE
 
 
 #/* terminate process. including its child process */
-def __terminate_process(proc):
-    proc_children = proc.children()
+def __terminate_process(pid):
+   
+    proc_children_pids=[]
+
+    #/* FIXME on windows, cmd_future_ps_terminate failed if no found */
+    try:
+        tmp = cmd_future_ps_children(pid)
+        proc_children_pids.extend(tmp)
+    except Exception as e:
+        pass
     
-    for x in proc_children:
+    for x in proc_children_pids:
         __terminate_process(x)
         
     try:
-        proc.terminate()
+        cmd_future_ps_terminate(pid)
     except Exception as e:
         pass
     
@@ -28,7 +38,7 @@ def rsnapshot_terminate():
     
     #/*---------------------------------------------------------------------*/
 
-    for proc in psutil.process_iter():
+    for proc in cmd_future_ps_list():
 
         #proc_name = proc.name()
 
@@ -37,8 +47,8 @@ def rsnapshot_terminate():
         #    proc_cwd = proc.cwd()
         #except Exception as e:
         #    proc_cwd = ''
-
-        proc_cmd = proc.cmdline()
+        proc_pid = proc['pid']
+        proc_cmd = proc['cmdline']
 
         have_rsnapshot = False
         have_rsnapshot_c_switch = False
@@ -78,7 +88,8 @@ def rsnapshot_terminate():
             #/* remove all lockfiles
             # * (ensure no ycspomeep rsnapshot is runnning)
             # */
-            __terminate_process(proc)
+            print("INFO: found rsnapshot is running (pid={0}) !!! now terminating...".format(proc_pid))
+            __terminate_process(proc_pid)
 
 
 if __name__ == '__main__':

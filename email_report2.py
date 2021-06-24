@@ -5,7 +5,7 @@ from email_report import email_report
 
 
 def email_report2(subject='important messages from the backup server',
-                  header_msg='Critical or warning alerts were detected on your the backup server. These issue may negatively affect your service. Please resolve them as soon as possible.',
+                  header_msg='Critical or warning alerts were detected on your backup server. These issues may negatively affect your service. Please resolve them as soon as possible.',
                   success_msgs=[],
                   info_msgs=[],
                   warning_msgs=[],

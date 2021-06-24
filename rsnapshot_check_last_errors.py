@@ -67,6 +67,7 @@ def rsnapshot_check_last_errors():
                     j = j - 1
 
         except Exception as e:
+            #print(e)
             pass
 
 

@@ -29,7 +29,11 @@ def disk_check_bad_sectors(preload_disks=[], negate=False):
 
         possible_bad_sectors = 0
 
-        disk_smart_attributes = disk['smart_attributes']
+        #/* on usb storage device, disk_check_smart_attributes shall be None */
+        disk_smart_attributes = disk.get('smart_attributes')
+        if disk_smart_attributes is None:
+            continue
+        
 
         if NOTIFY_DISK_MAX_BAD_SECTORS <= 0:
             continue

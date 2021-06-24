@@ -20,7 +20,10 @@ def disk_check_power_on_hours(preload_disks=[], negate=False):
     #/* looking through each disks */
     for j, disk in enumerate(preload_disks):
 
-        disk_smart_attributes = disk['smart_attributes']
+        #/* on usb storage device, disk_check_smart_attributes shall be None */
+        disk_smart_attributes = disk.get('smart_attributes')
+        if disk_smart_attributes is None:
+            continue
 
         #/* smart attribute id for Power_On_Hours: 9
         # */

@@ -2,6 +2,7 @@
 import sys
 from smart_scan_open import smart_scan_open
 from simple_argparse import simple_argparse
+from str_2_bool import str_2_bool
 from disk_check_bad_sectors import disk_check_bad_sectors
 from disk_check_smart_attributes import disk_check_smart_attributes
 from disk_check_temperature import disk_check_temperature
@@ -32,8 +33,9 @@ def __get_disk_model_string(disk):
     )
 
 
-def disk_monitor():
+def disk_monitor(negate=False):
 
+    negate = str_2_bool(negate)
     warning_msgs = []
     error_msgs = []
     disks = []
@@ -123,7 +125,7 @@ def disk_monitor():
     #/* --- disk_check_smart_attributes --- */
 
     problem_disks = disk_check_smart_attributes(
-        preload_disks=disks, negate=False)
+        preload_disks=disks, negate=negate)
 
     for x in problem_disks:
 
@@ -157,7 +159,7 @@ def disk_monitor():
     #/* --- disk_check_bad_sectors --- */
 
     problem_disks = disk_check_bad_sectors(
-        preload_disks=disks, negate=False)
+        preload_disks=disks, negate=negate)
 
     for x in problem_disks:
 
@@ -177,7 +179,7 @@ def disk_monitor():
     #/* --- disk_check_temperature --- */
 
     problem_disks = disk_check_temperature(
-        preload_disks=disks, negate=False)
+        preload_disks=disks, negate=negate)
 
     for x in problem_disks:
 
@@ -198,7 +200,7 @@ def disk_monitor():
 
     #/* --- disk_check_power_on_hours --- */
     problem_disks = disk_check_power_on_hours(
-        preload_disks=disks, negate=False)
+        preload_disks=disks, negate=negate)
 
     for x in problem_disks:
 

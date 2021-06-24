@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import sys
 from simple_argparse import simple_argparse
-from cmd_rm_r import cmd_rm_r
+from cmd_rm import cmd_rm
 from rsnapshot_compare_files import rsnapshot_compare_files
 from rsnapshot_monitor import rsnapshot_monitor
-from constants import DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE,\
-    DEEPLY_COMPARE_FILES, NOTIFY_MAX_MISSING_FILES
+from rsnapconfig_getparam_lockfile import rsnapconfig_getparam_lockfile
+from constants import DEEPLY_COMPARE_FILES, NOTIFY_MAX_MISSING_FILES
 
 import os
 import datetime
@@ -13,22 +13,21 @@ import datetime
 
 def rsnapshot_post():
 
+    #/* the file indicate the rsnapshot is in progress */
+    rsnapshot_lockfile = rsnapconfig_getparam_lockfile()
+    
     #/* record start backup time */
     end_time = datetime.datetime.now()
     print('INFO: end backup time: {0}'.format(end_time))
 
     #/* compute backup duration */
     start_time = datetime.datetime.fromtimestamp(
-        os.stat(DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE).st_ctime
+        os.stat(rsnapshot_lockfile).st_ctime
     )
 
     #/* note: duration is a timedelta obj!!! */
     duration = end_time - start_time
     print('INFO: backup duration: {0}'.format(duration))
-
-
-    #/* backup end, now delete a inner lock file */
-    cmd_rm_r(DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE, force=True)
 
     #/*---------------------------------------------------------------------*/
 
@@ -71,9 +70,10 @@ def rsnapshot_post():
 
     #/*---------------------------------------------------------------------*/
 
-    #/* after removing file: DEFAULT_RSNAPSHOT_BACKUP_IN_PROGESS_LOCKFILE
+    #/* after removing file: rsnapshot_lockfile
     # * function rsnapshot_monitor() will inform to PLC instantly!!!*/
     # */
+    cmd_rm(rsnapshot_lockfile, force=True)
     rsnapshot_monitor()
 
 

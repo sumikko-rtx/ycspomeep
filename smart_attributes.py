@@ -40,11 +40,11 @@ def smart_attributes(device_filename,
     #/* get device smart status */
     #/* smartctl --attributes --device <device_type> -- <device_filename> */
     unused, cmd_output, unused, unused = system_cmd(
-        cmd=(
+        *[
             'smartctl', '--attributes',
             '--device', device_type,
             '--', device_filename,
-        )
+        ]
     )
 
     #/* split lines in cmd_output */

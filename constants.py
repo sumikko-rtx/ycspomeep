@@ -1,13 +1,14 @@
 import os
 import tempfile
 import importlib
+import sys
 
 
 #/* These variables are technician use only */
 
 
 #/* important: set the current ycspomeep program version here */
-CURRENT_VERSION = "v3008b"
+CURRENT_VERSION = "v3025b"
 
 #/*---------------------------------------------------------------------*/
 
@@ -24,9 +25,13 @@ CONFIGS_DIR = os.path.realpath(
 
 
 #/* System-independent temporary directory */
-TEMP_DIR = os.path.realpath(
-    tempfile.gettempdir()
-)
+if sys.platform == 'cygwin':
+    TEMP_DIR = os.path.join(os.sep,'tmp')
+else:
+    TEMP_DIR = os.path.realpath(
+            tempfile.gettempdir()
+            )
+
 
 #/*---------------------------------------------------------------------*/
 
@@ -34,6 +39,10 @@ TEMP_DIR = os.path.realpath(
 
 DEFAULT_RSNAPSHOT_CONFIG_FILE = os.path.realpath(
     os.path.join(CONFIGS_DIR, 'rsnapshot.cfg')
+)
+
+DEFAULT_RSNAPSHOT_CRON_FILE = os.path.realpath(
+    os.path.join(CONFIGS_DIR, 'rsnapshot_cron')
 )
 
 DEFAULT_PLC_SETTINGS_FILE = os.path.realpath(
@@ -329,6 +338,18 @@ DEEPLY_COMPARE_FILES = getattr(x, 'DEEPLY_COMPARE_FILES',
 # */
 NOTIFY_MAX_MISSING_FILES = getattr(x, 'NOTIFY_MAX_MISSING_FILES',
                                    1024)
+
+
+#/* True to enable software update from git; False otherwise
+# * This only applies if a script rsnapshot_run.sh or rsnapshot_run.py is run.
+# */
+UPDATE_FROM_GIT_ENABLE = True
+
+
+#/* True to enable applying system update via apt, dnf, etc. ; False otherwise
+# * This only applies if a script rsnapshot_run.sh or rsnapshot_run.py is run.
+# */
+UPDATE_FROM_PKGMGR_ENABLE = True
 
 
 #/*---------------------------------------------------------------------*/

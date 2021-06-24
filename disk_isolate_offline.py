@@ -5,8 +5,8 @@ from simple_argparse import simple_argparse
 from system_cmd import system_cmd
 from constants import ISOLATE_DISKS_ENABLE, ISOLATE_DISKS, ISOLATE_MDADM_ARRAYS
 from disk_find_by_serial_numbers import disk_find_by_serial_numbers
-import psutil
-from cmd_umount import cmd_umount
+from cmd_future_umount import cmd_future_umount
+from cmd_future_mount import cmd_future_mount
 
 
 
@@ -23,12 +23,12 @@ def __disk_offline(device_filename):
     sdX = device_filename.replace("/dev/", "")
 
     #/* (optional) enter HDD to sleep mode: hdparm -Y /dev/sdX */
-    #system_cmd(cmd=['hdparm', '-Y', device_filename],
+    #system_cmd(*['hdparm', '-Y', device_filename],
     #           raise_exception=False,
     #           )
 
     #/* (optional) flush flush any outstanding I/O: */
-    system_cmd(cmd=['blockdev', '--flushbufs', device_filename],
+    system_cmd(*['blockdev', '--flushbufs', device_filename],
                raise_exception=False,
                )
 
@@ -36,7 +36,7 @@ def __disk_offline(device_filename):
     target_path = os.path.join(
         os.sep, 'sys', 'block', sdX, 'device', 'state')
     
-    system_cmd(cmd=['echo', 'offline'],
+    system_cmd(*['echo', 'offline'],
                output_file=target_path,
                )
     
@@ -44,7 +44,7 @@ def __disk_offline(device_filename):
     target_path = os.path.join(
         os.sep, 'sys', 'block', sdX, 'device', 'delete')
     
-    system_cmd(cmd=['echo', '1'],
+    system_cmd(*['echo', '1'],
                output_file=target_path,
                )
 
@@ -66,12 +66,12 @@ def __handle_offline_ISOLATE_DISKS():
         #/* get device filename */
         target_device_filename = target_disks[0]['device_filename']
         
-        #/* TODO found wrong here: forced umount due to target_device_filename=[]!!! */
         #/* list all partitions
         # * filter partitions by target_device_filename
         # */
-        target_partitions = list(psutil.disk_partitions())
-        
+
+        target_partitions = cmd_future_mount(list_mount_points=True)
+
         j = 0
         while j < len(target_partitions):
     
@@ -80,7 +80,7 @@ def __handle_offline_ISOLATE_DISKS():
             #/* Note: target_device_filename = /dev/sda
             # *       target_partitions[j].device = /dev/sda1
             # */
-            if target_partitions[j].device.startswith(target_device_filename):
+            if target_partitions[j]['device'].startswith(target_device_filename):
                 j = j + 1
 
             else:
@@ -92,7 +92,7 @@ def __handle_offline_ISOLATE_DISKS():
         #print('target_partitions:', target_partitions)
         
         for x in target_partitions:
-            cmd_umount(x.mountpoint, remove_mount_points=True)
+            cmd_future_umount(x['mount_point'], remove_mount_points=True)
 
 
         #/* TODO turn off the disks */
@@ -142,12 +142,12 @@ def __handle_offline_ISOLATE_MDADM_ARRAYS():
         target_disks = [x['device_filename'] for x in disk_find_by_serial_numbers(disk_serial_numbers)]
 
         #/* umount mdadm array first!!! */
-        cmd_umount(mount_point, remove_mount_points=True)
+        cmd_future_umount(mount_point, remove_mount_points=True)
 
         #/* stop mdadm array */
         #/* TODO is this sufficient to safely unmount mdadm array??? */
         mdadm_stop_cmd = ['mdadm', '--stop', md_device_filename]
-        system_cmd(cmd=mdadm_stop_cmd, raise_exception=False)
+        system_cmd(*mdadm_stop_cmd, raise_exception=False)
 
         #/* turn off the disks */
         for x in target_disks:

@@ -110,6 +110,7 @@ def rsnapshot_monitor():
         print('INFO: rsnapshot is now not running!!! Checking the status from last backup log...')
 
         rsnapshot_errors = rsnapshot_check_last_errors()
+        #print('rsnapshot_errors:',rsnapshot_errors)
 
         #/* 0: backup success
         # * 1: backup failed

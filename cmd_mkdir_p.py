@@ -2,18 +2,28 @@
 import sys
 import os
 from simple_argparse import simple_argparse
+from cmd_mkdir import cmd_mkdir
 
 
-def cmd_mkdir_p(*dirs):
+#/* run command: mkdir -m  <mode> -p <dir1> <dir2>... 
+# *
+# * This code is for backward compatibility to the past ycspomeep codes.
+# */
+def cmd_mkdir_p(*dirs, mode=0o777):
+    
+    #/* TODO sumikko: AAA */
+    if not isinstance(mode, int):
+        mode = int(mode, 8)
+        
+    #/*---------------------------------------------------------------------*/
+    
+    cmd_mkdir(*dirs, mode=mode, parents=True)
 
-    for x in dirs:
 
-        try:
-            os.makedirs(x)
 
-        #/* skip if file exists!!! */
-        except FileExistsError:
-            pass
+
+
+
 
 
 if __name__ == '__main__':

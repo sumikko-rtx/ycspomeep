@@ -5,7 +5,7 @@ from system_cmd import system_cmd
 import os
 from cmd_rm_r import cmd_rm_r
 from constants import TEMP_DIR, CURRENT_VERSION
-from cmd_mkdir_p import cmd_mkdir_p
+from cmd_mkdir import cmd_mkdir
 from str_2_bool import str_2_bool
 
 
@@ -14,8 +14,6 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
                     to_version='',
                     reset_configs=False,
                     check_new_version=False):
-
-    #/*---------------------------------------------------------------------*/
 
     #/* note: the following procedures requires git */
     check_new_version = str_2_bool(check_new_version)
@@ -34,15 +32,15 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
 
     #/* git refuses cloning if ycspomeep_at_tmpdir is not empty */
     cmd_rm_r(ycspomeep_at_tmpdir, force=True)
-    cmd_mkdir_p(ycspomeep_at_tmpdir)
-#     try:
-#         os.makedirs(ycspomeep_at_tmpdir)
-#     except FileExistsError as e:
-#         pass
+    cmd_mkdir(ycspomeep_at_tmpdir, parents=True)
+    #try:
+    #    os.makedirs(ycspomeep_at_tmpdir)
+    #except FileExistsError as e:
+    #    pass
     
     #/* get from github repository */
     unused, unused, unused, unused = system_cmd(
-        cmd=[
+        *[
             'git', 'clone',
             '--branch', branch,
             url,
@@ -53,9 +51,7 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
 
     #/* repository name must be ycspomeep.git */
     unused, output, unused, unused = system_cmd(
-        cmd=[
-            'git', 'remote', 'get-url', 'origin',
-        ],
+        *['git', 'remote', 'get-url', 'origin',],
         cwd=ycspomeep_at_tmpdir,
     )
 
@@ -65,7 +61,7 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
 
     #/* load update history */
     unused, unused, unused, unused = system_cmd(
-        cmd=['git', 'fetch'],
+        *['git', 'fetch'],
         cwd=ycspomeep_at_tmpdir,
         raise_exception=True,
     )
@@ -73,7 +69,7 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
     #/* get the latest version */
     #/* Note: -creatordate is more accurate than -taggerdate */
     unused, git_output, unused, unused = system_cmd(
-        cmd=['git', 'tag', '--sort=-creatordate'],
+        *['git', 'tag', '--sort=-creatordate'],
         cwd=ycspomeep_at_tmpdir,
     )
 
@@ -113,7 +109,7 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
 
         else:
 
-            print('INFO: This is currently the newest version available.')
+            print('INFO: {0} is currently the newest version available.'.format(to_version))
             
         return None
 
@@ -124,13 +120,13 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
     # * (1) git checkout <to_version>
     # *
     # * (2) rsync -rv --delete 
-    # *         --exclude configs/ --exclude .git/ --exclude <this_py_file>
+    # *         --exclude configs/ --exclude .git/
     # *         <ycspomeep_at_tmpdir>/ <this_py_dir>/
     # */
     if have_new_version:
         
         unused, unused, unused, unused = system_cmd(
-            cmd=['git', 'checkout', to_version],
+            *['git', 'checkout', to_version],
             cwd=ycspomeep_at_tmpdir,
             raise_exception=True,
         )
@@ -145,7 +141,7 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
         ]
 
         unused, output, unused, unused = system_cmd(
-            cmd=cmd,
+            *cmd,
             cwd=ycspomeep_at_tmpdir,
             raise_exception=True,
         )
@@ -173,7 +169,7 @@ def update_from_git(url='https://github.com/sumikko-rtx/ycspomeep.git',
         ]
         
         unused, output, unused, unused = system_cmd(
-            cmd=cmd,
+            *cmd,
             cwd=ycspomeep_at_tmpdir,
             raise_exception=True,
         )

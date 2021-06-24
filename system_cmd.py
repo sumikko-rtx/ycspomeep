@@ -4,17 +4,37 @@ from simple_argparse import simple_argparse
 import os
 import subprocess
 import time
+import chardet
+from str_2_bool import str_2_bool
 
 
 class SystemCmdException(Exception):
     pass
 
 
-def system_cmd(cmd,
-               sep=',',
+
+
+def __str_decode_autodetect(input_string, encoding):
+
+    target_encoding = encoding
+
+    if not target_encoding:
+        target_encoding = chardet.detect(input_string)['encoding']
+
+    output_string = input_string.decode(target_encoding)
+    
+    #print('target_encoding:',target_encoding)
+    #print('output_string:',output_string)
+    return output_string
+
+
+
+
+def system_cmd(*cmd,
                cwd=os.getcwd(),
                envs={},
-               encoding='utf-8',
+               input_encoding='utf-8',
+               output_encoding=None,
                input_string='',
 
                input_file='',
@@ -30,6 +50,7 @@ def system_cmd(cmd,
                output_strip_whitespace=True,
                error_strip_whitespace=True,
 
+               enable_cond_op=True,
                raise_exception=True,
                ):
     '''
@@ -38,33 +59,77 @@ def system_cmd(cmd,
 
     The command <cmd> is executed in C locale. Command alias not supported.
 
-    @param cmd@c: The system command to run, plus arguments.
+    @param cmd@c: The system command to run, plus arguments. Support && and || operaters.
     @param cwd@w: The working directory of the running <cmd>.
     @param env@v: Sets for environment variable, in a form VAR=VALUE (can be used many times).
-    @param encoding@e: Select for character encoding for reading/writing stdin, stdout or stderr.
+    @param input_encoding@e: Select for character encoding for readig from stdin.
+    @param output_encoding@e: Select for character encoding for writing to stdout or stderr.
     @param special_fx_kwargs: Additional options to be passed on to the function sumikko_func_begin.
     @param output_file: File for storing stdout output.
     @param error_file: File for storing stderr output.
     @param output_quiet: if set to true, do not print stdout content to stdout.
     @param error_quiet: if set to true, do not print stdout content to stderr.
-    @param raise_exception: If set to True, raise Exception with strerr message set.
+    
+    @param enable_cond_op: If set to True, enable conditional operator && and || ; Otherwise treat && and || as command arguments.
+    
+    @param raise_exception: If set to True, raise SystemCmdException with strerr message set.
     
     0: Exit status of <cmd>.
     1: stdout output of <cmd>.
     2: stderr output of <cmd>.
     3: Total execution time of running <cmd>.
     '''
+    
+    output_quiet = str_2_bool(output_quiet)
+    error_quiet = str_2_bool(error_quiet)
+    output_append = str_2_bool(output_append)
+    error_append = str_2_bool(error_append)
+    output_strip_whitespace = str_2_bool(output_strip_whitespace)
+    error_strip_whitespace = str_2_bool(error_strip_whitespace)
+    enable_cond_op = str_2_bool(enable_cond_op)
+    raise_exception = str_2_bool(raise_exception)
 
-    #/* split cmd argument, if any */
-    if isinstance(cmd, str):
-        cmd = cmd.split(sep)
-    cmd = list(cmd)
+    cmd_final=list(cmd)
+    #print('cmd_final:',cmd_final)
+
 
     #/* update_from_git form system's envs */
     envs.update(os.environ)
 
+
     #/* use C locale */
     envs['LANG'] = 'C'
+
+    #/************************************************************************/
+
+    #/* separate cmd_final by && or || */
+    cmd_final.insert(0, '&&')
+    cmd_final.append('&&')
+    
+    combination_cmds = []
+    currnet_op = '&&'
+    current_cmd = []
+    
+    for x in cmd_final:
+
+        if x in ['&&', '||']:
+
+            if len(current_cmd) > 0:
+                
+                #/* make a copy of current_cmd*/
+                tmp = []
+                tmp.extend(current_cmd)
+                combination_cmds.append([currnet_op, tmp])
+
+            currnet_op = x
+            current_cmd.clear()
+
+        else:
+
+            current_cmd.append(x)
+
+    #for _op,_cmd in combination_cmds:
+    #   print(_op,_cmd)
 
     #/************************************************************************/
 
@@ -78,7 +143,7 @@ def system_cmd(cmd,
             raise Exception()
 
     except Exception as e:
-        input_data = input_string.encode(encoding)
+        input_data = input_string.encode(input_encoding)
 
     #/************************************************************************/
 
@@ -106,117 +171,159 @@ def system_cmd(cmd,
             envs['path'].split(';'))
 
     else:
-        raise SystemCmdException(
-            'Cannot determine path variable from unknown OS.')
+        pass
+        #raise SystemCmdException(
+        #    'Cannot determine path variable from unknown OS.')
 
-    #/* Identify the actual executable path of cmd[0] */
-    for x in possible_search_paths:
-        program_path = os.path.join(x, cmd[0])
-
-        #/* filepath have executable permission... */
-        if os.path.isfile(program_path) and \
-                os.access(program_path, os.X_OK):
-            cmd[0] = program_path
-            break
 
     #/************************************************************************/
 
+    #/* this sets _cmd[0], the program name */
+    prog_name = ''
+
+    #/* true if prog_name found; False otherwise */
+    prog_found = True
+
     #/* this variables to be returned...*/
     return_code = 0
-    output = ''
-    error = ''
+    
+    #/* these store stdout and stderr */
+    outputs = []
+    errors = []
+    
+    #/* records total execution time */
     elapsed_n_seconds = 0.0
 
-    #/* run command by opening a pipe... */
-    try:
 
+
+
+    #/* run each cmd combination */
+    for j, (_op, _cmd) in enumerate(combination_cmds):
+
+        #/* --- select for operator _op --- */
+        
+        #/* only handle _op on combination_cmds[1] or after!!! */
+        if enable_cond_op and j > 0:
+            
+            #/* handle || operator */
+            if _op == '||' and return_code == 0:
+                continue
+
+            #/* handle && operator */
+            if _op == '&&' and return_code != 0:
+                continue
+
+        #print('running:',_cmd)
+
+
+        #/* --- Identify the actual executable path of _cmd[0] --- */
+        prog_name = _cmd[0]
+        prog_found = False
+
+        for x in possible_search_paths:
+            prog_path = os.path.join(x, _cmd[0])
+
+            #/* filepath have executable permission... */
+            if os.path.isfile(prog_path) \
+                    and os.access(prog_path, os.X_OK):
+
+                prog_found = True
+                _cmd[0] = prog_path
+                break
+
+        if not prog_found:
+            tmp_error = 'command not found: {0}'.format(_cmd[0])
+            return_code = 1
+            continue
+
+
+    
+        #/* --- run command by opening a pipe --- */
+    
         #/* open output_file if any */
         f_output = sys.stdout
-
+    
         if output_quiet:
             f_output = subprocess.PIPE
-
+    
         if output_file:
             f_output = open(output_file, 'wb')
-
+    
         #/* open error_file if any */
         f_error = sys.stderr
-
+    
         if error_quiet:
             f_error = subprocess.PIPE
-
+    
         if error_file:
             f_error = open(error_file, 'wb')
-
-        #with open("stdout.txt","wb") as out, open("stderr.txt","wb") as err:
-        #    subprocess.Popen("ls",stdout=out,stderr=err)
-
+    
         #/* TODO how to feed input_string/input_file into string */
         p = subprocess.Popen(
-            cmd,
+            _cmd,
             stdin=subprocess.PIPE,
             stdout=f_output,
             stderr=f_error,
             env=envs,
             cwd=cwd
         )
-
+    
         #/* record start time tick */
         t1 = time.time()
 
+        #/* TODO what happen if CTRL+C is pressed??? */
         #/* run command actually take place */
-        output, error = p.communicate(input=input_data)
-
+        tmp_output, tmp_error = p.communicate(input=input_data)
+    
         #/* record end time tick */
         t2 = time.time()
-
+    
         #/* get stdout from running commnad */
-        if output:
-            output = output.decode(encoding)
+        if tmp_output:
+            tmp_output = __str_decode_autodetect(tmp_output, output_encoding)
         else:
-            output = ''
-
+            tmp_output = ''
+    
         #/* get stderr from running commnad */
-        if error:
-            error = error.decode(encoding)
+        if tmp_error:
+            tmp_error = __str_decode_autodetect(tmp_error, output_encoding)
         else:
-            error = ''
-
-        #/* strip leading/trailing whitespace */
+            tmp_error = ''
+    
+        #/* strip leading/trailing whitespace(s) from stdout */
         if output_strip_whitespace:
-            output = output.strip()
-
+            tmp_output = tmp_output.strip()
+            
+        #/* strip leading/trailing whitespace(s) from stderr*/
         if error_strip_whitespace:
-            error = error.strip()
-
-        #/* print how long does it take to run this command */
-        elapsed_n_seconds = t2 - t1
-
+            tmp_error = tmp_error.strip()
+    
+        #/* accumulate the current execution time of this _cmd */
+        elapsed_n_seconds = elapsed_n_seconds + (t2 - t1)
+    
         #/* the program return code */
         return_code = p.returncode
-
-    #/* CTRL+C is pressed...*/
-    #except KeyboardInterrupt:
-    #    raise KeyboardInterrupt
-
-    except Exception as e:
-        #/* in case of program not found error... */
-        return_code = 1
-        error = 'Cannot run command {0}: {1}'.format(cmd[0], str(e))
+        
+        #/* append stdout and stderr */
+        outputs.append(tmp_output)
+        errors.append(tmp_error)
+        
 
     #/************************************************************************/
 
-    #/* raise exception if raise_exception is set and return code != 0*/
+    #/* handle raise_exception if command error */
     if raise_exception and return_code != 0:
 
         #/* error is empty, try output */
-        if not error:
-            error = output
+        if not tmp_error:
+            tmp_error = tmp_output
 
         raise SystemCmdException(
-            'command {0} return exit status {1}: {2}'.format(cmd[0], return_code, error))
+            'command {0} return exit status {1}: {2}'.format(prog_name, return_code, tmp_error))
+        
+    #/************************************************************************/
 
-    return return_code, output, error, elapsed_n_seconds  # CCCsumikko_func_end
+    return return_code, ''.join(outputs), ''.join(errors), elapsed_n_seconds  # CCCsumikko_func_end
 
 
 if __name__ == '__main__':

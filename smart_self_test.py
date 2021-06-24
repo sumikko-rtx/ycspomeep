@@ -90,10 +90,10 @@ def smart_self_test(device_filename,
     #                                         been run.
     #
 
-    cmd = ("smartctl", "--capabilities", "--device",
-           device_type, "--", device_filename,)
+    cmd = ["smartctl", "--capabilities", "--device",
+           device_type, "--", device_filename,]
     
-    unused, cmd_output, unused, unused = system_cmd(cmd=cmd)
+    unused, cmd_output, unused, unused = system_cmd(*cmd)
 
     #/* find a line begins with "Self-test execution status:" */
     cmd_output_lines = cmd_output.splitlines()
@@ -135,26 +135,29 @@ def smart_self_test(device_filename,
 
         percentage = 0.0
         status = "RUNNING"
-        smartctl_opts = ()
+        smartctl_opts = []
 
         if short:
-            smartctl_opts = ("--test", "short",)
+            smartctl_opts.extend(["--test", "short",])
 
         elif long:
-            smartctl_opts = ("--test", "long",)
+            smartctl_opts.extend(["--test", "long",])
 
         elif conveyance:
-            smartctl_opts = ("--test", "conveyance",)
+            smartctl_opts.extend(["--test", "conveyance",])
 
         elif abort_test:
-            smartctl_opts = ("--abort",)
+            smartctl_opts.extend(["--abort",])
             status = "NOT_RUNNING"
 
         #/* smartctl <smartctl_opts> --device <device_type> -- <device_filename> */
-        cmd = ("smartctl", *smartctl_opts, "--device",
-               device_type, "--", device_filename,)
+        cmd = []
 
-        unused, unused, unused, unused = system_cmd(cmd=cmd)
+        cmd.append("smartctl")
+        cmd.extend(smartctl_opts)
+        cmd.extend(["--device", device_type, "--", device_filename,])
+
+        unused, unused, unused, unused = system_cmd(*cmd)
 
     return status, percentage  # CCCsumikko_func_end
 

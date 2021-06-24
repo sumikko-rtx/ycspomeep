@@ -22,9 +22,9 @@ def smart_scan_open():
     # * this return a list of corresponding disk options pass to smartctl
     # */
 
-    cmd = ('smartctl', '--scan-open',)
+    cmd = ['smartctl', '--scan-open',]
 
-    unused, cmd_A_output, unused, unused = system_cmd(cmd=cmd)
+    unused, cmd_A_output, unused, unused = system_cmd(*cmd)
 
     cmd_A_output = cmd_A_output.strip()
     cmd_A_output_lines = cmd_A_output.splitlines()
@@ -40,13 +40,15 @@ def smart_scan_open():
     #/* parse the output lines */
     for line_A in cmd_A_output_lines:
 
-        #/* the row data will be store*/
+        #/* the row data will be store */
         tmprow = {}
 
         #/* text after # is comment. remove it */
         line_A = re.sub(r'#.*$', '', line_A)
 
-        #/* remove repeated whitespace if empty */
+        #/* remove leading and trailing whitespace if any */
+        #/* replace repeated whitespace by single space */
+        line_A = line_A.strip()
         line_A = re.sub(r'\s+', ' ', line_A)
 
         #/* split line by whitespaces */
@@ -63,8 +65,8 @@ def smart_scan_open():
         tmprow['device_type'] = device_type
 
         #/* next, run smartctl --info <smartctl_options> */
-        cmd = ('smartctl', '--info', *smartctl_options,)
-        unused, cmd_B_output, unused, unused = system_cmd(cmd=cmd)
+        cmd = ['smartctl', '--info', *smartctl_options,]
+        unused, cmd_B_output, unused, unused = system_cmd(*cmd)
 
         cmd_B_output = cmd_B_output.strip()
         cmd_B_output_lines = cmd_B_output.splitlines()
@@ -125,7 +127,11 @@ def smart_scan_open():
             k = re.sub(r'[^A-Za-z0-9]', '_', k)
             k = k.lower()
 
-            tmprow[k] = v
+            #/* except device_type. why??? */
+            if k in ['device_type']:
+                pass
+            else:
+                tmprow[k] = v
 
 
         #/* For key sector_size, possible output

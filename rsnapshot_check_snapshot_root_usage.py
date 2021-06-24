@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import sys
 from simple_argparse import simple_argparse
-import psutil
 from rsnapconfig_getparam_snapshot_root import rsnapconfig_getparam_snapshot_root
 from constants import NOTIFY_MAX_DISK_USED_PERCENT
 
@@ -25,27 +24,45 @@ def rsnapshot_check_snapshot_root_usage(negate=False):
     #/* this store all disk warning, used to prepare an email message */
     current_disk_warnings = []
 
+    #/* initialise disk usage
+    # * assume all value as zero
+    # */
+    bytes_used = 0
+    bytes_free = 0
+    bytes_total = 0
+    percent_used = 0.0
+    percent_free = 0.0
+    
     try:
-        
-        #/* Exception when try to show disk usage on unmounting disk */
-        tmp = psutil.disk_usage(snapshot_root)
 
-        bytes_used = tmp.used
-        bytes_free = tmp.free
-        bytes_total = bytes_used + bytes_free
+        #/* python >= 3.3 can use disk_usage() from shutil module */
+        if sys.hexversion >= 0x03030000:
+    
+            import shutil
+            bytes_total, bytes_used, bytes_free = shutil.disk_usage(snapshot_root)
+    
+        #/* otherwise use psutil, df, or equipvalent */
+        else:
+
+            #/* Note: Exception when try to show disk usage on unmounted disk */
+            import psutil
+            tmp = psutil.disk_usage(snapshot_root)
+
+            bytes_used = tmp.used
+            bytes_free = tmp.free
+            bytes_total = bytes_used + bytes_free
+           
+        #/* compute byte_used% and bytes_free% */
         percent_used = 100.0 * float(bytes_used) / float(bytes_total)
         #percent_free = 100.0 * float(bytes_free) / float(bytes_total)
         percent_free = 100.0 - percent_used
 
-    #/* in case psutil encountered an error */
-    except Exception as e:
 
-        #/* assume all value as zero */
-        bytes_used = 0
-        bytes_free = 0
-        bytes_total = 0
-        percent_used = 0.0
-        percent_free = 0.0
+
+    #/* in case of error while getting disk usage... */
+    except Exception as e:
+        pass
+
 
     #/*---------------------------------------------------------------------*/
 
