@@ -22,25 +22,10 @@ else
 # "dnf: command not found"
 #
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # update everything
 dnf -y update
+
+
 
 
 # install software
@@ -49,18 +34,20 @@ dnf -y install \
 	smartmontools \
 	NetworkManager \
 	rsync \
+	perl \
 	rsnapshot \
 	samba-client \
 	cifs-utils \
-	python3 \
 	cronie \
+	python3 \
 	python3-pip \
-	python3-psutil \
-	openssh \
+	python3-chardet \
 	openssh-clients \
 	git \
 	util-linux \
 	psmisc \
+	procps-ng \
+	dnf-utils \
 	`true "*** end of package list ***"`
 
 # install modbus_tk

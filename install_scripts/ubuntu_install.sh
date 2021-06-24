@@ -5,7 +5,7 @@
 # for deb-based distributions (Debian, Ubuntu)
 #
 # to install: 
-#   sh debian_plcbackup_install.sh
+#   sh ubuntu_install.sh
 #
 
 # must run by root...
@@ -17,11 +17,16 @@ else
 	exit 1
 	fi
 
+
+
+
 #
 # Workaround for
 # dpkg: error: dpkg frontend is locked by another process xxxx
 #
 rm -f /var/lib/dpkg/lock-frontend
+
+
 
 
 #
@@ -39,9 +44,15 @@ rm /var/cache/apt/archives/lock
 rm /var/lib/dpkg/lock
 dpkg --configure -a
 
+
+
+
 # update everything
 apt -y update
 apt -y upgrade
+
+
+
 
 # install software
 # util-linux provides mountpoint
@@ -49,18 +60,19 @@ apt -yq install \
 	smartmontools \
 	network-manager \
 	rsync \
+	perl \
 	rsnapshot \
 	smbclient \
 	cifs-utils \
-	python3 \
 	cron \
+	python3 \
 	python3-pip \
-	python3-psutil \
-	ssh \
+	python3-chardet \
 	openssh-client \
 	git \
 	util-linux \
 	psmisc \
+	procps \
 	`true "*** end of package list ***"`
 
 # install modbus_tk
