@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# software packages required for PLC backup server system
+# software packages required for ycspomeep backup server system
 # for cygwin
 #
 # to install: 
@@ -14,16 +14,14 @@
 # Note: do not use $(id -u) in cygwin. use $(net session) instead
 #       see ttps://superuser.com/questions/660191/how-to-check-if-cygwin-mintty-bash-is-run-as-administrator
 #
-
 net session > /dev/null 2>&1
-
 if test "$?" -eq 0
 then
 	true
 else
 	echo "This script must be run by root."
 	exit 1
-	fi
+fi
 
 
 
@@ -68,6 +66,11 @@ fi
 # https://superuser.com/questions/214831/how-to-update-cygwin-from-cygwins-command-line
 "$SETUP_EXE" --no-desktop --no-shortcuts --no-startmenu --quiet-mode
 
+
+# --- END OF INSTALLATION SCRIPT --- 
+echo ""
+echo "--- The ycspomeep backup system program installation is now complete!!! ---"
+echo ""
 
 
 
@@ -141,3 +144,6 @@ pip3 install chardet
 #apt -y install webmin
 
 # --- END OF INSTALLATION SCRIPT --- 
+echo ""
+echo "--- The ycspomeep backup system program installation is now complete!!! ---"
+echo ""

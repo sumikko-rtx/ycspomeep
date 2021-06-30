@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# software packages required for PLC backup server system
+# software packages required for ycspomeep backup server system
 # for deb-based distributions (Debian, Ubuntu)
 #
 # to install: 
@@ -9,13 +9,14 @@
 #
 
 # must run by root...
-if test `id -u` -eq 0
+test `id -u` -eq 0 > /dev/null 2>&1
+if test "$?" -eq 0
 then
 	true
 else
 	echo "This script must be run by root."
 	exit 1
-	fi
+fi
 
 
 
@@ -103,3 +104,6 @@ apt -y update
 apt -y install webmin
 
 # --- END OF INSTALLATION SCRIPT --- 
+echo ""
+echo "--- The ycspomeep backup system program installation is now complete!!! ---"
+echo ""

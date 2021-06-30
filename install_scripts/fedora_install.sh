@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/shcd 
 
 #
-# software packages required for PLC backup server system
+# software packages required for ycspomeep backup server system
 # for rpm-based distributions (RHEL >=8 / CentOS >=8 / Fedora >= 22)
 #
 # to install: 
@@ -9,13 +9,17 @@
 #
 
 # must run by root...
-if test `id -u` -eq 0
+test `id -u` -eq 0 > /dev/null 2>&1
+if test "$?" -eq 0
 then
 	true
 else
 	echo "This script must be run by root."
 	exit 1
-	fi
+fi
+
+
+
 
 #
 # replace "dnf" by "yum" if encountered an error message
@@ -77,4 +81,8 @@ dnf -y install webmin
 
 
 
-# --- END OF INSTALLATION SCRIPT ---
+
+# --- END OF INSTALLATION SCRIPT --- 
+echo ""
+echo "--- The ycspomeep backup system program installation is now complete!!! ---"
+echo ""
