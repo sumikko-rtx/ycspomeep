@@ -6,6 +6,8 @@ from check_if_root import check_if_root
 from cmd_future_uname_a import cmd_future_uname_a
 from cmd_future_reboot import cmd_future_reboot
 import os
+from rsnapshot_check_running_progress import rsnapshot_check_running_progress
+import time
 
 
 
@@ -56,7 +58,7 @@ def update_from_pkgmgr(check_upgradable=False, reboot=False):
             pass
         
         print('INFO: trying {0}'.format(cmd))
-        system_cmd(*cmd)
+        system_cmd(*cmd, raise_exception=False)
         print('INFO: software database updated')
 
 
@@ -89,20 +91,34 @@ def update_from_pkgmgr(check_upgradable=False, reboot=False):
             pass
 
         print('INFO: trying {0}'.format(cmd))
-        unused, output, unused, unused = system_cmd(*cmd)
+        unused, output, unused, unused = system_cmd(*cmd, raise_exception=False)
         print(output)
-        
+
         #/* exit... */
         return
 
-
-
-
     #/*---------------------------------------------------------------------*/
 
-    #/* install all upgrades (check_upgradable=False, check_reboot=False) */   
+    #/* install all upgrades (check_upgradable=False, check_reboot=False) */
     if True:
+
+        #/* important:!!!  all backup must be complete before updating system... */
+        print('INFO: wait until all backup job(s) is/are completed...')
         
+        while True:
+            
+            have_rsnapshot_running, unused, unused, unused, unused, unused, unused, unused = rsnapshot_check_running_progress()
+            
+            if not have_rsnapshot_running:
+                break
+
+            #/* to reduce cpu time... */
+            time.sleep(1)
+
+
+
+
+        #/* system update goes here... */
         cmd.clear()
         
         if False:
@@ -130,12 +146,12 @@ def update_from_pkgmgr(check_upgradable=False, reboot=False):
                         '--no-shortcuts', '--no-startmenu', '--quiet-mode'])
 
         print('INFO: trying {0}'.format(cmd))
-        pkgmgr_rc, output, unused, unused = system_cmd(*cmd,raise_exception=False)
+        
+        pkgmgr_rc, output, unused, unused = system_cmd(
+            *cmd, raise_exception=False)
         
         if pkgmgr_rc == 0:
             print('INFO: package(s) are successfully updated!!!')
-
-
 
 
     #/*---------------------------------------------------------------------*/

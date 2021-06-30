@@ -277,6 +277,8 @@ update_from_pkgmgr()
 
 exit_program()
 {
+	# $1: exit code
+	rc="$1"
 	stage_no="$(get_backup_stage_no)"
 
 	if test ! "$rc" -eq 0
@@ -293,6 +295,8 @@ exit_program()
 	# clean up
 	rm -f "$THIS_SCRIPT_LOCKFILE" 2>&1
 	"$PY3" "${THIS_SCRIPT_DIRNAME}/rsnapshot_monitor.py"
+	
+	return "$rc"
 }
 
 
@@ -305,7 +309,7 @@ handle_sigint()
 	then
 		rc=1
 		stage_no="$(get_backup_stage_no)"
-		exit_program
+		exit_program "$rc"
 		msg_error "rsnapshot was interrupt by user! (at stage $stage_no)"
 	fi | report
 	exit 1
@@ -357,7 +361,7 @@ then
 
 		# exit_program will run umount_backup_disks
 		set_backup_stage_no 5
-		exit_program
+		exit_program "$rc"
 
 	fi | report
 	rc=0

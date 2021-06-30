@@ -6,7 +6,7 @@ from simple_argparse import simple_argparse
 #/* Return true if input_str are  y, yes, t, true, on, 1,
 # *        false if n, no, f, false, off and 0.
 # */
-def str_2_bool(input_str):
+def str_2_bool(input_str, raise_exception=False):
 
     v = input_str
     if hasattr(v, 'lower'):
@@ -20,6 +20,9 @@ def str_2_bool(input_str):
 
     else:
         v = bool(v)
+
+    if raise_exception and (not v):
+        raise Exception('\"{0}\" was evaluated False!!!'.format(input_str))
 
     return v
 
