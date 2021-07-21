@@ -8,13 +8,16 @@
 #   sh ubuntu_install.sh
 #
 
+#
 # must run by root...
-test `id -u` -eq 0 > /dev/null 2>&1
+# on cygwin, use net session instead
+#
+test `id -u` -eq 0 > /dev/null || net session > /dev/null 2>&1
 if test "$?" -eq 0
 then
 	true
 else
-	echo "This script must be run by root."
+	echo "ERROR: This script must be run by root!!!"
 	exit 1
 fi
 
