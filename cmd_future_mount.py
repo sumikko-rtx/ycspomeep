@@ -4,6 +4,7 @@ from simple_argparse import simple_argparse
 from cmd_mkdir import cmd_mkdir
 from system_cmd import system_cmd
 import re
+import os
 
 
 
@@ -84,20 +85,8 @@ def cmd_future_mount(list_mount_points=False,
         cmd_mkdir(mount_point, parents=True)
 
 
-        #/* we have to check if mount_point is mount on this system
-        # * mountpoint is provided from util-linux package
-        # */
-
-        #/* https://serverfault.com/questions/50585/whats-the-best-way-to-check-if-a-volume-is-mounted-in-a-bash-script */
-        #/* https://stackoverflow.com/questions/4212522/shell-script-to-know-whether-a-filesystem-is-already-mounted */
-        rc, unused, unused, unused = system_cmd(
-            *['mountpoint', '-q', mount_point],
-            raise_exception=False,
-        )
-
-        
-        #/* 0: mount_point is mounted; non-zero otherwise */
-        if rc != 0:
+        #/* mount goes here!!! */
+        if not os.listdir(mount_point) :
             system_cmd(
                 *mount_cmd,
             )

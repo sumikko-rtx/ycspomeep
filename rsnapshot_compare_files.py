@@ -66,7 +66,7 @@ def rsnapshot_compare_files(deeply=False):
                 # *
                 # * on ssh, rsnapshot only receive file from remote host, so no '<'
                 # * '>' represents file(s) is/are received from remote host
-                # * 'c' represents fils(s) is/are created/changed from local host
+                # * 'c' represents file(s) is/are created/changed from local host
                 # * '*' represents extra file(s) in <snapshot_root> and is/are going to be deleted
                 # * '.' represents file(s) content is/are not updated
                 # */
@@ -77,7 +77,7 @@ def rsnapshot_compare_files(deeply=False):
                 elif itemized_changes[0] in ['>', 'c']:
 
                     #/* for created file, itemized_changes[2:] is set to both '+'
-                    # * (there are 9 '+'s in total
+                    # * (there are 9 '+'s in total)
                     # */
                     if itemized_changes[2:] == '+++++++++':
                         files_added.append(filename)

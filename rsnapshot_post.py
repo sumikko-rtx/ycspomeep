@@ -51,11 +51,6 @@ def rsnapshot_post():
 
     else:
 
-        #if not files_added:
-        #    files_added.append('meepmeep.txt')
-        #if not files_modified:
-        #    files_modified.append('meepmeep.jpg')
-
         for x in files_added:
             print(
                 'WARNING: file {0} was added in the source location but not successfully transferred!'.format(x))

@@ -207,11 +207,35 @@ backup()
 	rsnapshot_rc="$?"
 
 
+	#
+	# rsnapshot exit code:
+	#
+	# 0: all operation completed successfully
+	# 1: a fatal error occured
+	# 2: some warining occured, but the backup still finished
+	#
+	if test "$rsnapshot_rc" -eq 0 || test "$rsnapshot_rc" -eq 2
+	then
+		rsnapshot_rc=0
+	fi
+	
+	
+	#
+	# Is rsnapshot encountered an error???
+	#
+	"$PY3" "$THIS_SCRIPT_DIRNAME/rsnapshot_check_last_errors.py" --raise-exception True 2>&1 >/dev/null
+	rsnapshot_rc="$?"
+	
+	
+	#
+	# Saving backup log...
+	#
 	msg_info "saving rsnapshot backup log..."
 	test "0" -eq 0 &&
 		rm -f "$RSNAPSHOT_LOGFILE" 2>&1 &&
 		cp "$RSNAPSHOT_LOGFILE_TMP" "$RSNAPSHOT_LOGFILE"
 	tmp_rc="$?"
+
 
 
 	if test "$tmp_rc" -eq 0 && test "$rsnapshot_rc" -eq 0

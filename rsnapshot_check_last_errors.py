@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 import sys
 from simple_argparse import simple_argparse
-import os
-from rsnapconfig_get_retain_levels import rsnapconfig_get_retain_levels
 from constants import DEFAULT_RSNAPSHOT_INTERMEDIATE_OUTPUT_FILE, DEFAULT_RSNAPSHOT_INTERMEDIATE_ERROR_FILE
 
 
 #/* check disk usage from snapshot_root, which defined in given rsnapshot config file
 # * if there was an error while reading snapshot_root, this will return all zero values
 # */
-def rsnapshot_check_last_errors():
+def rsnapshot_check_last_errors(raise_exception=False):
 
     #/* list of latestest rsnapshot error */
     rsnapshot_errors = []
@@ -73,6 +71,9 @@ def rsnapshot_check_last_errors():
 
     #/* remove duplicated rsnapshot_errors */
     rsnapshot_errors = list(set(rsnapshot_errors))
+
+    if raise_exception and bool(rsnapshot_errors):
+        raise Exception('rsnapshot was encountered the following errors:\n{0}'.format('\n'.join(rsnapshot_errors)))
 
     return rsnapshot_errors
 
