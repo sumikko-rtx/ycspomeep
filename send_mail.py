@@ -10,7 +10,9 @@ import os
 import smtplib
 import ssl
 from str_2_bool import str_2_bool
-import html
+
+# for html_ecape function
+from html import escape as html_escape # << python 3.2
 
 
 def send_mail(host,
@@ -241,10 +243,10 @@ def send_mail(host,
         # */
         if not use_html_markup:
 
-            #/* message must be escapes from harmful characters such as
+            #/* message must be escaped from harmful characters such as
             # * &, >,...
             # */
-            message = html.escape(message)
+            message = html_escape(message)
             message = '<pre>{0}</pre>'.format(message)
 
         part = MIMEText(message, 'html', encoding)
