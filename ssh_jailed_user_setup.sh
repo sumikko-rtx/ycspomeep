@@ -17,6 +17,16 @@
 #
 
 #
+# Get this script path
+#
+this_script_file="$(readlink -f "$0")"
+this_script_dirname="$(dirname "$this_script_file")"
+this_script_basename="$(basename "$this_script_file")"
+
+
+
+
+#
 # Check if user is root
 #
 check_if_root()
@@ -42,10 +52,11 @@ check_if_root()
 
 
 
+
 #
 # aquire lockfile
 #
-lockfile="/tmp/$(basename "$0").pid"
+lockfile="/tmp/$(basename "$this_script_file").pid"
 acquire_lockfile()
 {
 	# aquire lockfile
