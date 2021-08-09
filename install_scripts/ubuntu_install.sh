@@ -61,6 +61,8 @@ apt -y upgrade
 # install software
 # util-linux provides mountpoint
 apt -yq install \
+	vim \
+	mdadm \
 	smartmontools \
 	network-manager \
 	rsync \

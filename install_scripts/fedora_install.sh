@@ -38,6 +38,8 @@ dnf -y update
 # install software
 # util-linux provides mountpoint
 dnf -y install \
+	vim \
+	mdadm \
 	smartmontools \
 	NetworkManager \
 	rsync \

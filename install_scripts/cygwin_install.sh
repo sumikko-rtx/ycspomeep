@@ -77,6 +77,7 @@ echo ""
 # install software for PLC program
 REQUIRED_PKG="$(echo \
 	man-db \
+	vim \
 	smartmontools \
 	$(true "network-manager: not included in msys2 version. use 'netsh' command to configure your network.") \
 	rsync \
