@@ -166,13 +166,14 @@ parse_args()
 export_config()
 {
 	x="$ycspomeep_configs_dir"
+	
 	if test -n "$ycspomeep_configs_dir"
 	then
-		if test ! "$dry_run" -eq 0
+	
+		echo "exporting 'backup settings to $export_config_dir/ ..."
+	
+		if test "$dry_run" -eq 0
 		then
-			echo rsync -avn "$x/" "$export_config_dir/"
-			rsync -avn "$x/" "$export_config_dir/"
-		else
 			# -q: slient rsync
 			rsync -avq "$x/" "$export_config_dir/"
 		fi
@@ -183,15 +184,40 @@ export_config()
 
 
 #
-# completely remove ycspomeep
+# completely remove ycspomeep schedule settings
 #
-remove_ycspomeep()
+remove_ycspomeep_cron()
 {
 	x="$ycspomeep_prog_dir"
-	if test ! "$dry_run" -eq 0
+	
+	echo "removing the current backup schedule settings ..."
+	
+	if test "$dry_run" -eq 0
 	then
-		echo rm -rf "$x/"
-	else
+
+		# old ycspomeet stores backup cron settings to ...
+		rm -rf /etc/cron.d/rsnapshot_cron
+
+		crontab -l | \
+			grep -v "$x/rsnapshot_monitor.py" | \
+			grep -v "$x/disk_monitor.py" | \
+			grep -v "$x/rsnapshot_run.sh" | crontab
+
+	fi
+}
+
+
+#
+# completely remove the remaining ycspomeep file
+#
+remove_ycspomeep_remaining()
+{
+	x="$ycspomeep_prog_dir"
+
+	echo "removing ycspomeep ..."
+	
+	if test "$dry_run" -eq 0
+	then
 		rm -rf "$x/"
 	fi
 }
@@ -215,7 +241,7 @@ EOF
 	
 cat << EOF
 
-The backup configuation(s) has been backed up to the direcory
+The backup configuation(s) has been backed up to the directory
 $export_config_dir.
 
 If you suppose to use ycspomeep backup program again, you have
@@ -273,7 +299,8 @@ then
 	# --- begin of uninstall code ---
 	true &&
 		export_config &&
-		remove_ycspomeep &&
+		remove_ycspomeep_cron &&
+		remove_ycspomeep_remaining &&
 		tips_after_reinstall_ycspomeep
 	# --- end of uninstall code ---
 fi
