@@ -90,6 +90,8 @@ where options are:
 
     -n --interval    interval of the type --backup-level-name (0, 1, 2, ...)
 
+    -p --print-path  Print the backup file path and then exit.
+
     -h --help        Show this help message and then exit.
 
 EOF
@@ -106,6 +108,7 @@ parse_args()
 	# list of default values
 	level_name="alpha"
 	interval="0"
+	print_path="0"
 
 	# get rsnapshot_root
 	PY3="/usr/bin/python3"
@@ -113,7 +116,7 @@ parse_args()
 
 
 	# read options goes here!!!
-	parsed_options="$(getopt --options "N:n:h" --longoptions 'level-name:,interval:,help' -- "$@")"
+	parsed_options="$(getopt --options "N:n:ph" --longoptions 'level-name:,interval:,--print-path,help' -- "$@")"
 	if test ! "$?" -eq 0
 	then
 		exit 1
@@ -136,6 +139,11 @@ parse_args()
 			-n|--interval)
 				interval="$2"
 				shift 2
+				;;
+				
+			-p|--print_path)
+				print_path="1"
+				shift 1
 				;;
 				
 			-h|--help)
@@ -168,8 +176,19 @@ show_backuped_files_at()
 	# we are going to open that directory...
 	target_dir="$RSNAPSHOT_SNAPSHOT_ROOT/$level_name.$interval/"
 
+	# if print_path=1, print $target_dir and then exit
+	if test "$print_path" -eq 0
+	then
+		true
+	else
+		echo "$target_dir"
+		return 0
+	fi
+
+
 	# get the program path of xdg-open
 	XDG_OPEN="$(command -v xdg-open)"
+
 
 	# in case we have xdg-open...
 	if test -f "$XDG_OPEN"
@@ -181,21 +200,32 @@ Your file manager should see all files in directory
 $target_dir
 
 Also this script should exit when the file manager closes. If not,
-press CTRL + C to exit.
+return this terminal window and press CTRL + C to exit.
 
 EOF
+
 		xdg-open "$target_dir/"
-		
+		rc="$?"
 		
 	# in case we do not have xdg-open...
+	else
+		rc=1
+	fi
+
+
+	if test "$rc" -eq 0
+	then
+		true
 	else
 	
 cat << EOF
 
 $0 requires a desktop environment (GNOME, KDE, etc) to run!!
 
-Try manually cd $target_dir
-and then use ls command to view the backed up files.
+Try manually list the backed up files using the following command:
+
+cd "$target_dir"
+ls -Alh
 
 EOF
 
