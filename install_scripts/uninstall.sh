@@ -167,7 +167,8 @@ export_config()
 {
 	x="$ycspomeep_configs_dir"
 	
-	if test -n "$ycspomeep_configs_dir"
+	# do not run export when $export_config_dir empties
+	if test -n "$ycspomeep_configs_dir" && test -n "$export_config_dir"
 	then
 	
 		echo "exporting 'backup settings to $export_config_dir/ ..."
