@@ -30,6 +30,6 @@
   0 21  *  *  1-6 root       /bin/sh /var/ycspomeep/rsnapshot_run.sh
   
   
-@reboot           root       /bin/sh /var/ycspomeep/rsnapshot_run.sh
+@reboot           root       /usr/bin/python3 /var/ycspomeep/disk_monitor.py && /bin/sh /var/ycspomeep/rsnapshot_run.sh
 
 
