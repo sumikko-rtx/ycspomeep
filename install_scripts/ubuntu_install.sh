@@ -61,6 +61,7 @@ apt -y upgrade
 # install software
 # util-linux provides mountpoint
 apt -yq install \
+	acpid \
 	vim \
 	mdadm \
 	smartmontools \
@@ -107,6 +108,12 @@ rm -f jcameron-key.asc
 apt -y install apt-transport-https
 apt -y update
 apt -y install webmin
+
+# enable this server shutdown by simply pressing a power button
+# https://unix.stackexchange.com/questions/242129/how-to-set-power-button-to-shutdown-instead-of-suspend
+mkdir -p /etc/acpi/events/ && \
+	printf "event=button/power\naction=/sbin/poweroff\n" > /etc/acpi/events/power && \
+	systemctl restart acpid.service
 
 # --- END OF INSTALLATION SCRIPT --- 
 echo ""
