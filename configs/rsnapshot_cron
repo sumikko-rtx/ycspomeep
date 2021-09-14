@@ -28,8 +28,8 @@
   *  *  *  *  *   root       /usr/bin/python3 /var/ycspomeep/rsnapshot_monitor.py
   0  0  *  *  0   root       /usr/bin/python3 /var/ycspomeep/disk_monitor.py
   0 21  *  *  1-6 root       /bin/sh /var/ycspomeep/rsnapshot_run.sh
+
   
-  
-@reboot           root       /usr/bin/python3 /var/ycspomeep/disk_monitor.py && /bin/sh /var/ycspomeep/rsnapshot_run.sh
+@reboot           root       sleep 1800 && /usr/bin/python3 /var/ycspomeep/disk_monitor.py && /bin/sh /var/ycspomeep/rsnapshot_run.sh
 
 
