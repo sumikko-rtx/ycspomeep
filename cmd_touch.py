@@ -126,7 +126,7 @@ def cmd_touch(*files,
     #/*---------------------------------------------------------------------*/
     
     #/* datetime_= None : assume datetime_ = time now */
-    if not datetime_:
+    if datetime_ is None:
         datetime_ = datetime.datetime.now()
         
     #/*---------------------------------------------------------------------*/
@@ -176,7 +176,7 @@ def cmd_touch(*files,
             if change_access_time:
                 utime_data[0] = epoch
 
-            #/* modifying atime and mtime */
+            #/* modifying atime(utime_data[1]) and mtime (utime_data[0]) */
             os.utime(x, utime_data)
 
 

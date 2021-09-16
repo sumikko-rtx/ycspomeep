@@ -1,4 +1,6 @@
+
 #!/usr/bin/env python3
+import os
 import sys
 from simple_argparse import simple_argparse
 from cmd_future_ps_list import cmd_future_ps_list
@@ -58,6 +60,7 @@ def rsnapshot_terminate():
         #/* look for rsnapshot executable */
         while j < len(proc_cmd):
             if proc_cmd[j].endswith('rsnapshot.bin') or proc_cmd[j].endswith('rsnapshot.exe') or proc_cmd[j].endswith('rsnapshot'):
+                #print('meepmeep:', proc_cmd[j])
                 have_rsnapshot = True
                 break
             j = j + 1
@@ -65,16 +68,30 @@ def rsnapshot_terminate():
         #/* look for -c switch */
         while j < len(proc_cmd):
             if proc_cmd[j] == '-c':
+                #print('meepmeep: -c')
                 have_rsnapshot_c_switch = True
                 break
             j = j + 1
 
+
+
+
+
         #/* look for argument contains RSNAPSHOT_CONFIG_FILE */
         while j < len(proc_cmd):
-            if proc_cmd[j] == DEFAULT_RSNAPSHOT_CONFIG_FILE:
+        
+            #/* config file may be relative, use realpath to get actual, absolute path */ 
+            tmp = os.path.realpath(proc_cmd[j])
+            
+            if tmp == DEFAULT_RSNAPSHOT_CONFIG_FILE:
+                #print('meepmeep: DEFAULT_RSNAPSHOT_CONFIG_FILE')
                 have_rsnapshot_config_file = True
                 break
+                
             j = j + 1
+
+
+
 
         #print('cmd:', proc_cmd)
         #print('cwd:', proc_cwd)

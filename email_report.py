@@ -12,7 +12,7 @@ from constants import SMTP_HOST, SMTP_PORT_NUMBER, SMTP_TRY_SSL_TLS,\
     SENDER_LOGIN_PASSWORD
 from constants import TEMP_DIR
 
-
+#/* a shortcut function to send mail by given sender mail account from configs/email_settings.py */
 def email_report(subject='',
                  message='',
                  message_file='',

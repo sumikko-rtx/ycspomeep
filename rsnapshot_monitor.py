@@ -133,10 +133,9 @@ def rsnapshot_monitor():
         wait_interval_seconds = 0
 
         if have_rsnapshot_time_reach_hard_limit:
-            #/* the message will be informed immediately!!! */
-            #pass
-
-            #else:
+            #/* the message will be informed immediately and kill the current rsnapshot session!!! */
+            pass
+        else:
             pidname = 'plc_b_backup_too_long_soft'
             wait_interval_seconds = 3600  # /* << 1 hours */
 
@@ -151,4 +150,5 @@ def rsnapshot_monitor():
 
 if __name__ == '__main__':
     print(simple_argparse(rsnapshot_monitor, sys.argv[1:]))
+
 

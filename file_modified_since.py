@@ -11,8 +11,11 @@ import datetime
 #
 def file_modified_since(filename):
 
+    #/* note: use mtime (modification time), not ctime (creation time)
+    # * https://docs.python.org/3/library/os.path.html
+    # */
     t2 = datetime.datetime.now()
-    t1 = os.path.getctime(filename)
+    t1 = os.path.getmtime(filename)
     t1 = datetime.datetime.fromtimestamp(t1)
     t_diff = t2 - t1
 
