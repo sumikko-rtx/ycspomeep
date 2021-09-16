@@ -134,9 +134,9 @@ def rsnapshot_monitor():
 
         if have_rsnapshot_time_reach_hard_limit:
             #/* the message will be informed immediately!!! */
-            pass
+            #pass
 
-        else:
+            #else:
             pidname = 'plc_b_backup_too_long_soft'
             wait_interval_seconds = 3600  # /* << 1 hours */
 
