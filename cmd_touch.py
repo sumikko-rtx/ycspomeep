@@ -167,21 +167,36 @@ def cmd_touch(*files,
             # */
             epoch = datetime_.timestamp()
 
-            #/* the format of epoch must be: (access_time, modification_time) */
-            utime_data = [stinfo.st_atime, stinfo.st_mtime]
+            #/* prepare a turple for passing to function os.utime() */
+            atime = stinfo.st_atime
+            mtime = stinfo.st_mtime
 
+            #/* notes: utime_data must be either a tuple of two ints or None
+            # * otherwise an Exception may be generated
+            # */
             if change_modification_time:
-                utime_data[1] = epoch
+                mtime = int(epoch)
 
             if change_access_time:
-                utime_data[0] = epoch
+                atime = int(epoch)
 
-            #/* modifying atime(utime_data[1]) and mtime (utime_data[0]) */
-            os.utime(x, utime_data)
+            # print('file:', x)
+            # print('change_access_time:', change_access_time)
+            # print('change_modification_time:', change_modification_time)
+            # print('mtime:', mtime)
+            # print('atime:', atime)
+
+            #/* modifying atime(utime_data[0]) and mtime (utime_data[1]) */
+            os.utime(x, (atime, mtime))
+
+            #/* debug only, to verify the result is correct*/
+            # stinfo = os.stat(x)
+            # print("Current access time:", stinfo.st_atime)
+            # print("Current modification time:", stinfo.st_mtime)
 
 
         #/* in case of file not exists */
-        except Exception as e:
+        except FileNotFoundError as e:
             
             #/* A file x that does not exist is created empty,
             # * unless no_create or no_dereference is supplied.
@@ -197,7 +212,9 @@ def cmd_touch(*files,
                 f.close()
                 
                 
-                
+        #/* other unexplained exception */
+        except Exception as e:
+            raise e from None
                 
                 
                 

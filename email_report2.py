@@ -5,6 +5,7 @@ from email_report import email_report
 
 # for html_ecape function
 from html import escape as html_escape # << python 3.2
+from constants import CURRENT_VERSION
 
 
 
@@ -54,6 +55,9 @@ def email_report2(subject='important messages from the backup server',
         #/* footer_msg */
         if footer_msg:
             _body.append('<p>{0}</p>'.format(html_escape(footer_msg)))
+
+        #/* add version info at the end of this mail message */
+        _body.append('<p>This mail was sent by ycspomeep version {0}.</p>'.format(html_escape(CURRENT_VERSION)))
 
         #/* send email message*/
         email_report(

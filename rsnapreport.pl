@@ -152,19 +152,40 @@ while (my $line = nextLine(\@rsnapout)){
 	
 }
 
+
+
+
+
 # --- modification start ---
+
+# backup summary
 print "\n";
 pretty_print();
 
+
+# warning messages, if any
 printf "\n%i WARNING(S)\n\n", scalar @warnings ;
 if(scalar @warnings > 0){
 	print join("\n",@warnings);
 }
 print "\n";
 
+
+# error messages, if any
 printf "\n%i ERROR(S)\n\n", scalar @errors ;
 if(scalar @errors > 0){
 	print join("\n",@errors);
 }
 print "\n";
+
+
+# tell what version does ycspomeep be currently using.
+my $ycspomeep_version = `/usr/bin/python3 -c "from constants import CURRENT_VERSION; print(CURRENT_VERSION);"`;
+
+$ycspomeep_version =~ s/\n//g; # << remove newline
+$ycspomeep_version =~ s/\r//g; # << remove newline also
+
+printf "*** This mail was sent by ycspomeep version %s. ***\n\n", "$ycspomeep_version";
+
+
 # --- modification end ---
