@@ -20,10 +20,14 @@ def rsnapshot_compare_files(deeply=False):
     #/* deeply_check=True, check file by checksum (-c)
     # * otherwise, check file by last modified time (-t)
     # *
+    # * -v: print running progress
     # * -i: itemized changes. see rsync(1) for details
+    # * -t: compare  by last modified time
+    # * -c: compare by checksum
     # * -n: dry run, don't make any changes on disk!!!
     # */
-    rsync_switches = '-rcvin' if deeply else '-rtvin'
+    rsync_switches = '-rlpcgoDvin' if deeply else '-rlptgoDvin'
+    #rsync_switches = '-racvin --no-t' if deeply else '-ravin'
 
     for type_, srcdir, destdir, rsync_extra_params in backup_jobs:
 
@@ -48,7 +52,14 @@ def rsnapshot_compare_files(deeply=False):
             #/* remove last 3 lines containing statistic information */
             for line in output_lines[0:-4]:
 
-                tmp = line.split(None,1)
+                #/* output sample:
+                # * >f.st...... iddd/logs/website-production-access_log
+                # * >f.st...... iddd/web/website/production/shared/log/production.log
+                # * .d..t...... iddd/web/website/production/shared/sessions/
+                # * >f+++++++++ iddd/web/website/production/shared/sessions/ruby_sess.017a771cc19b18cd
+                # * >f+++++++++ iddd/web/website/production/shared/session/
+                # */
+                tmp = line.split(None, 1)
 
                 itemized_changes = tmp[0]
                 filename = tmp[1]
@@ -64,7 +75,8 @@ def rsnapshot_compare_files(deeply=False):
 
                 #/* itemized_changes[0]
                 # *
-                # * on ssh, rsnapshot only receive file from remote host, so no '<'
+                # * on ssh, rsnapshot won't send file to remote host, so no '<'
+                # *
                 # * '>' represents file(s) is/are received from remote host
                 # * 'c' represents file(s) is/are created/changed from local host
                 # * '*' represents extra file(s) in <snapshot_root> and is/are going to be deleted
