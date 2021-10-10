@@ -8,7 +8,7 @@ import sys
 
 
 #/* important: set the current ycspomeep program version here */
-CURRENT_VERSION = "v3048b"
+CURRENT_VERSION = "v3049b"
 
 #/*---------------------------------------------------------------------*/
 
