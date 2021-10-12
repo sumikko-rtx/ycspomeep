@@ -33,49 +33,54 @@ def rsnapconfig_getparam_backup(config_file=DEFAULT_RSNAPSHOT_CONFIG_FILE):
         #/* you may also want to remove whitespace characters like `\n` at the end of each line */
         content_lines = [x.strip() for x in content_lines]
 
-        #/* look for lockfile */
+        #/* look for eveny lines in config_file... */
         for x in content_lines:
 
-            if x.startswith('backup'):
+            #/* in rsnapconfig, parameters are split by TAB */
+            tmp = x.split('\t')
+            #print(tmp)
 
-                #/* rsnapconfig paremeters are split by TAB */
-                tmp = x.split('\t')
-                #print(tmp)
+            #/* skip empty list, to prevent IndexError */
+            if not tmp:
+                continue
 
-                #/* minimum required paremeters num, including tmp[0]="backup": 3 */
-                if len(tmp) >= 3:
+            #/* the first item x[0] must be exactly 'backup' */
+            if not x.lower() == 'backup':
+                continue
 
-                    #/* source and dest directory */
-                    srcdir = tmp[1]
-                    destdir = tmp[2]
+            #/* minimum # of parameters, including tmp[0]="backup": 3 */
+            if len(tmp) < 3:
+                continue
 
+            #/* rsnapconfig extraction is now take place!!! */
 
+            #/* source and dest directory */
+            srcdir = tmp[1]
+            destdir = tmp[2]
 
-                    #/* identify for source filetype */
-                    #/* (6) starting with rsync:// */
-                    if srcdir.lower().startswith('rsync://'):
-                        type_ = 'rsync'
+            #/* identify for source filetype */
+            #/* (6) starting with rsync:// */
+            if srcdir.lower().startswith('rsync://'):
+                type_ = 'rsync'
 
-                    #/* (8) starting with lvm:// */
-                    elif srcdir.lower().startswith('lvm://'):
-                        type_ = 'lvm'
+            #/* (8) starting with lvm:// */
+            elif srcdir.lower().startswith('lvm://'):
+                type_ = 'lvm'
 
-                    #/* (3), (4), (5) contais : */
-                    elif ':' in srcdir:
-                        type_ = 'ssh'
+            #/* (3), (4), (5) contains : */
+            elif ':' in srcdir:
+                type_ = 'ssh'
 
-                    #/* otherwise, local is used */
-                    else:
-                        type_ = 'local'
+            #/* otherwise, local is used */
+            else:
+                type_ = 'local'
 
+            #/* TODO extra rsync parameters */
+            rsync_extra_params = None
+            #if len(tmp) >= 4:
+            #    pass
 
-
-                    #/* TODO extra rsync parameters */
-                    rsync_extra_params = None
-                    #if len(tmp) >= 4:
-                    #    pass
-
-                    result.append((type_, srcdir, destdir, rsync_extra_params))
+            result.append((type_, srcdir, destdir, rsync_extra_params))
 
     return result
 

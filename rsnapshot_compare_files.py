@@ -20,22 +20,28 @@ def rsnapshot_compare_files(deeply=False):
     #/* deeply_check=True, check file by checksum (-c)
     # * otherwise, check file by last modified time (-t)
     # *
+    # * rsync_switches should be as same as rsnapshot's
+    # * rsync_long_args and rsync_short_args
+    # *
     # * -v: print running progress
     # * -i: itemized changes. see rsync(1) for details
-    # * -t: compare  by last modified time
-    # * -c: compare by checksum
     # * -n: dry run, don't make any changes on disk!!!
+    # *
+    # * -a = -rlptgoD (from rsync's man page)
     # */
-    rsync_switches = '-rlpcgoDvin' if deeply else '-rlptgoDvin'
-    #rsync_switches = '-racvin --no-t' if deeply else '-ravin'
+    rsync_switches = '-WrlpcgoDvin' if deeply else '-WrlptgoDvin'
+    #rsync_switches = '-cWavin --no-t' if deeply else '-Wavin'
 
     for type_, srcdir, destdir, rsync_extra_params in backup_jobs:
-
+        
         #/* destdir are relative to snapshot_root/alpha.0 */
         destdir = os.path.join(
             '{0}.0'.format(rsnapconfig_get_retain_levels(idx=0, include_snapshot_root=True)),
             destdir,
         )
+
+        #print('srcdir:', srcdir)
+        #print('destdir:', destdir)
 
         #/* for type_ = local, ssh and rsync, use them directly */
         return_code, output, unused, unused = system_cmd(

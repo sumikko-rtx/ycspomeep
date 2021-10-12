@@ -77,6 +77,14 @@ msg_info()
 
 
 
+msg_warning()
+{
+	echo "WARNING: $1"
+	echo "WARNING: $1" 1>&2
+}
+
+
+
 msg_error()
 {
 	echo "ERROR: $1"
@@ -218,14 +226,17 @@ backup()
 	then
 		rsnapshot_rc=0
 	fi
-	
+	msg_warning "rsnapshot_run.sh: backup: rsnapshot_rc=$rsnapshot_rc" #<< debug
+
+
 	
 	#
 	# Is rsnapshot encountered an error???
 	#
 	"$PY3" "$THIS_SCRIPT_DIRNAME/rsnapshot_check_last_errors.py" --raise-exception True 2>&1 >/dev/null
 	rsnapshot_rc="$?"
-	
+	msg_warning "rsnapshot_run.sh: backup: rsnapshot_last_error_rc=$rsnapshot_rc" #<< debug
+
 	
 	#
 	# Saving backup log...
@@ -234,13 +245,15 @@ backup()
 	test "0" -eq 0 &&
 		rm -f "$RSNAPSHOT_LOGFILE" 2>&1 &&
 		cp "$RSNAPSHOT_LOGFILE_TMP" "$RSNAPSHOT_LOGFILE"
-	tmp_rc="$?"
+	rsnapshot_save_backup_log_rc="$?"
+	msg_warning "rsnapshot_run.sh: backup: rsnapshot_save_backup_log_rc=$rsnapshot_save_backup_log_rc" #<< debug
+	msg_warning "rsnapshot_run.sh: backup: RSNAPSHOT_SNAPSHOT_ROOT=$RSNAPSHOT_SNAPSHOT_ROOT" #<< debug
 
 
-
-	if test "$tmp_rc" -eq 0 && test "$rsnapshot_rc" -eq 0
+	if test "$rsnapshot_save_backup_log_rc" -eq 0 && test "$rsnapshot_rc" -eq 0
 	then
 		true
+		#tmp_rc=0
 	else
 		tmp_rc=1
 	fi
