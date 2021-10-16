@@ -226,7 +226,7 @@ backup()
 	then
 		rsnapshot_rc=0
 	fi
-	msg_warning "rsnapshot_run.sh: backup: rsnapshot_rc=$rsnapshot_rc" #<< debug
+	#msg_warning "rsnapshot_run.sh: backup: rsnapshot_rc=$rsnapshot_rc" #<< debug
 
 
 	
@@ -235,7 +235,7 @@ backup()
 	#
 	"$PY3" "$THIS_SCRIPT_DIRNAME/rsnapshot_check_last_errors.py" --raise-exception True 2>&1 >/dev/null
 	rsnapshot_rc="$?"
-	msg_warning "rsnapshot_run.sh: backup: rsnapshot_last_error_rc=$rsnapshot_rc" #<< debug
+	#msg_warning "rsnapshot_run.sh: backup: rsnapshot_last_error_rc=$rsnapshot_rc" #<< debug
 
 	
 	#
@@ -250,15 +250,15 @@ backup()
 	rsnapshot_save_backup_log_error=$(cp "$RSNAPSHOT_LOGFILE_TMP" "$RSNAPSHOT_LOGFILE" 2>&1 1>/dev/null)
 	rsnapshot_save_backup_log_rc="$?"
 
-	msg_warning "rsnapshot_run.sh: backup: rsnapshot_remove_old_backup_log_rc=$rsnapshot_remove_old_backup_log_rc" #<< debug
-	msg_warning "rsnapshot_run.sh: backup: rsnapshot_remove_old_backup_log_error=$rsnapshot_remove_old_backup_log_error" #<< debug
+	#msg_warning "rsnapshot_run.sh: backup: rsnapshot_remove_old_backup_log_rc=$rsnapshot_remove_old_backup_log_rc" #<< debug
+	#msg_warning "rsnapshot_run.sh: backup: rsnapshot_remove_old_backup_log_error=$rsnapshot_remove_old_backup_log_error" #<< debug
 	
-	msg_warning "rsnapshot_run.sh: backup: rsnapshot_save_backup_log_rc=$rsnapshot_save_backup_log_rc" #<< debug
-	msg_warning "rsnapshot_run.sh: backup: rsnapshot_save_backup_log_error=$rsnapshot_save_backup_log_error" #<< debug
+	#msg_warning "rsnapshot_run.sh: backup: rsnapshot_save_backup_log_rc=$rsnapshot_save_backup_log_rc" #<< debug
+	#msg_warning "rsnapshot_run.sh: backup: rsnapshot_save_backup_log_error=$rsnapshot_save_backup_log_error" #<< debug
 	
-	msg_warning "rsnapshot_run.sh: backup: RSNAPSHOT_SNAPSHOT_ROOT=$RSNAPSHOT_SNAPSHOT_ROOT" #<< debug
-	msg_warning "rsnapshot_run.sh: backup: RSNAPSHOT_LOGFILE_TMP=$RSNAPSHOT_LOGFILE_TMP" #<< debug
-	msg_warning "rsnapshot_run.sh: backup: RSNAPSHOT_LOGFILE=$RSNAPSHOT_LOGFILE" #<< debug
+	#msg_warning "rsnapshot_run.sh: backup: RSNAPSHOT_SNAPSHOT_ROOT=$RSNAPSHOT_SNAPSHOT_ROOT" #<< debug
+	#msg_warning "rsnapshot_run.sh: backup: RSNAPSHOT_LOGFILE_TMP=$RSNAPSHOT_LOGFILE_TMP" #<< debug
+	#msg_warning "rsnapshot_run.sh: backup: RSNAPSHOT_LOGFILE=$RSNAPSHOT_LOGFILE" #<< debug
 	
 	if test "$rsnapshot_save_backup_log_rc" -eq 0 && test "$rsnapshot_rc" -eq 0
 	then

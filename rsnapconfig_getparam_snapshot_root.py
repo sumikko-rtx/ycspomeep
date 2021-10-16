@@ -2,6 +2,7 @@
 import sys
 from simple_argparse import simple_argparse
 import os
+import re
 from constants import DEFAULT_RSNAPSHOT_CONFIG_FILE
 
 
@@ -23,17 +24,31 @@ def rsnapconfig_getparam_snapshot_root(config_file=DEFAULT_RSNAPSHOT_CONFIG_FILE
         #/* look for snapshot_root */
         for x in content_lines:
 
-            if x.startswith('snapshot_root'):
+            #/* skip empty line */
+            if not x:
+                continue
 
-                #/* rsnapconfig paremeters are split by TAB */
-                tmp = x.split('\t')
-                #print(tmp)
+            #/* A hash mark (#) on the beginning of a line is treated as a comment. */
+            if x[0] == '#':
+                continue
 
-                #/* minimum required paremeters num, including tmp[0]="snapshot_root": 2 */
-                if len(tmp) >= 2:
+            #/* ***important*** remove repeated TABs!!! */
+            x = re.sub(r'\t+', '\t', x)
 
-                    #/* snapshot_root was found in the second splitterd value */
-                    result = tmp[1]
+            #/* in rsnapconfig, parameters are split by TAB */
+            tmp = x.split('\t')
+            #print(tmp)
+
+            #/* the first item x[0] must be exactly 'backup' */
+            if not tmp[0].lower() == 'snapshot_root':
+                continue
+
+            #/* minimum # of parameters, including tmp[0]="backup": 2 */
+            if len(tmp) < 2:
+                continue
+
+            #/* snapshot_root was found in the second splitterd value */
+            result = tmp[1]
 
     result = os.path.realpath(result)
 

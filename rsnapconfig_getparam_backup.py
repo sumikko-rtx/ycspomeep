@@ -2,6 +2,7 @@
 import sys
 from simple_argparse import simple_argparse
 import os
+import re
 from constants import DEFAULT_RSNAPSHOT_CONFIG_FILE
 
 
@@ -36,16 +37,23 @@ def rsnapconfig_getparam_backup(config_file=DEFAULT_RSNAPSHOT_CONFIG_FILE):
         #/* look for eveny lines in config_file... */
         for x in content_lines:
 
+            #/* skip empty line */
+            if not x:
+                continue
+
+            #/* A hash mark (#) on the beginning of a line is treated as a comment. */
+            if x[0] == '#':
+                continue
+
+            #/* ***important*** remove repeated TABs!!! */
+            x = re.sub(r'\t+', '\t', x)
+
             #/* in rsnapconfig, parameters are split by TAB */
             tmp = x.split('\t')
             #print(tmp)
 
-            #/* skip empty list, to prevent IndexError */
-            if not tmp:
-                continue
-
             #/* the first item x[0] must be exactly 'backup' */
-            if not x.lower() == 'backup':
+            if not tmp[0].lower() == 'backup':
                 continue
 
             #/* minimum # of parameters, including tmp[0]="backup": 3 */

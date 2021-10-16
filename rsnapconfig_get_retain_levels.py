@@ -2,6 +2,7 @@
 import sys
 from simple_argparse import simple_argparse
 import os
+import re
 from constants import DEFAULT_RSNAPSHOT_CONFIG_FILE
 from rsnapconfig_getparam_snapshot_root import rsnapconfig_getparam_snapshot_root
 
@@ -29,30 +30,49 @@ def rsnapconfig_get_retain_levels(idx=-1, include_snapshot_root=False):
         #/* look for snapshot_root */
         for x in content_lines:
 
-            if x.startswith('retain'):
+            #/* skip empty line */
+            if not x:
+                continue
 
-                #/* rsnapconfig paremeters are split by TAB */
-                tmp = x.split('\t')
-                # print(tmp)
+            #/* A hash mark (#) on the beginning of a line is treated as a comment. */
+            if x[0] == '#':
+                continue
 
-                #/* is that line conatins snapshot_root only? */
-                if len(tmp) >= 1:
+            #/* ***important*** remove repeated TABs!!! */
+            x = re.sub(r'\t+', '\t', x)
 
-                    #/* snapshot_root was found in the second splitterd value */
-                    #/* append snapshot root if include_snapshot_root=True */
-                    if include_snapshot_root:
+            #/* in rsnapconfig, parameters are split by TAB */
+            tmp = x.split('\t')
+            #print(tmp)
 
-                        snapshot_root = rsnapconfig_getparam_snapshot_root()
+            #/* the first item x[0] must be exactly 'backup' */
+            if not tmp[0].lower() == 'retain':
+                continue
 
-                        tmp[1] = os.path.realpath(
-                            os.path.join(snapshot_root, tmp[1])
-                        )
+            #/* minimum # of parameters, including tmp[0]="backup": 2 */
+            if len(tmp) < 2:
+                continue
 
-                    retain_levels.append(tmp[1])
+
+            #/* retain_level was found in the second splitterd value */
+            #/* append snapshot root if include_snapshot_root=True */
+            if include_snapshot_root:
+
+                snapshot_root = rsnapconfig_getparam_snapshot_root()
+
+                tmp[1] = os.path.realpath(
+                    os.path.join(snapshot_root, tmp[1])
+                )
+
+            retain_levels.append(tmp[1])
+
+
 
         if not retain_levels:
-            raise Exception('no snapshot_root found in file {0}'.format(
+            raise Exception('no retain_levels found in file {0}'.format(
                 DEFAULT_RSNAPSHOT_CONFIG_FILE))
+
+
 
     if idx < 0:
         return retain_levels
