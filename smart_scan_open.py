@@ -4,6 +4,9 @@ from simple_argparse import simple_argparse
 import re
 
 from system_cmd import system_cmd
+from cmd_future_mount import cmd_future_mount
+from str_2_bool import str_2_bool
+
 
 
 #
@@ -11,7 +14,7 @@ from system_cmd import system_cmd
 #
 # to list disk(s) attached on this server.
 #
-def smart_scan_open():
+def smart_scan_open(include_system_disks=False):
 
     #/* this will placed the result status (dict type ) */
     results = []
@@ -26,6 +29,7 @@ def smart_scan_open():
 
     unused, cmd_A_output, unused, unused = system_cmd(*cmd)
 
+    include_system_disks = str_2_bool(include_system_disks)
     cmd_A_output = cmd_A_output.strip()
     cmd_A_output_lines = cmd_A_output.splitlines()
 
@@ -177,7 +181,27 @@ def smart_scan_open():
         user_capacity = re.sub('\s*bytes.*$', '', user_capacity)
         tmprow['user_capacity'] = int(user_capacity)
 
+
+
+        #/* additional check: check if using system disk */
+        is_system_disk = False
+        mount_points = cmd_future_mount(list_mount_points=True)
+
+        for x in mount_points:
+            
+            #/* TODO unix only, how about windows */
+            if x['device'].startswith(device_filename) and x['mount_point'] == '/':
+                is_system_disk = True
+                break
+
+        #print('device_filename:',device_filename, type(device_filename))
+        #print('is_system_disk:',is_system_disk, type(is_system_disk))
+        #print('include_system_disks:',include_system_disks, type(include_system_disks))
+
         #/* append */
+        if is_system_disk and (not include_system_disks):
+            continue
+
         results.append(tmprow)
 
     return results

@@ -12,7 +12,8 @@ from email_report2 import email_report2
 from smart_self_test import smart_self_test
 import time
 from constants import NOTIFY_DISK_MAX_BAD_SECTORS,\
-    NOTIFY_DISK_MIN_TEMP, NOTIFY_DISK_MAX_TEMP, NOTIFY_DISK_MAX_POWER_ON_HOURS
+    NOTIFY_DISK_MIN_TEMP, NOTIFY_DISK_MAX_TEMP, NOTIFY_DISK_MAX_POWER_ON_HOURS,\
+    INCLUDE_SYSTEM_DISKS
 from constants import PLC_RWADDR_SERVER_STATUS,\
     PLC_RWCODE_SERVER_STATUS_OK, PLC_RWCODE_SERVER_STATUS_FAILED
 from disk_isolate_offline import disk_isolate_offline
@@ -57,7 +58,7 @@ def disk_monitor(negate=False):
     try:
 
         #/* list attached disks */
-        disks = smart_scan_open()
+        disks = smart_scan_open(include_system_disks=INCLUDE_SYSTEM_DISKS)
 
         #/* do self test first */
         for j, x in enumerate(disks):

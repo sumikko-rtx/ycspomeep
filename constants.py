@@ -8,7 +8,7 @@ import sys
 
 
 #/* important: set the current ycspomeep program version here */
-CURRENT_VERSION = "v3050b4"
+CURRENT_VERSION = "v3051b"
 
 #/*---------------------------------------------------------------------*/
 
@@ -257,6 +257,12 @@ SENDER_LOGIN_PASSWORD = getattr(x, 'SENDER_LOGIN_PASSWORD',
 # */
 RECIPIENT_EMAILS = getattr(x, 'RECIPIENT_EMAILS',
                            ['recipient1@gmail.com', 'recipient2@gmail.com', 'recipient3@gmail.com', 'recipient4@gmail.com'])
+
+
+#/* True to allow s.m.a.r.t test on local system disks
+# */
+INCLUDE_SYSTEM_DISKS = getattr(x, 'INCLUDE_SYSTEM_DISKS',
+                               False)
 
 #/* notify to RECIPIENT_EMAILS when disk have n% full
 # *
