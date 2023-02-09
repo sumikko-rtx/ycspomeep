@@ -10,10 +10,11 @@
 # (3) use that file generate the backup summary
 # (4) email that summary to recipients
 #
-# to properly run this script, you must set
+# to properly run this script, you must
 #
-# (1) verbose >= 4
-# (2) add --stats to rsync_long_args
+# (1) set for paramenter "" greater or equal to 4
+# (2) add --stats to stop_on_stale_lockfile "rsync_long_args"
+# (3) stop_on_stale_lockfile = 0
 #
 # in the rsnapshot.conf
 #
@@ -26,10 +27,12 @@ THIS_SCRIPT_FILE="$(readlink -f "$0")"
 THIS_SCRIPT_DIRNAME="$(dirname "$THIS_SCRIPT_FILE")"
 THIS_SCRIPT_BASENAME="$(basename "$THIS_SCRIPT_FILE")"
 THIS_SCRIPT_LOCKFILE="/tmp/$THIS_SCRIPT_BASENAME.lock"
+THIS_SCRIPT_PID="$$"
 #echo "THIS_SCRIPT_FILE=$THIS_SCRIPT_FILE"
 #echo "THIS_SCRIPT_DIRNAME=$THIS_SCRIPT_DIRNAME"
 #echo "THIS_SCRIPT_BASENAME=$THIS_SCRIPT_BASENAME"
 #echo "THIS_SCRIPT_LOCKFILE=$THIS_SCRIPT_LOCKFILE"
+#echo "THIS_SCRIPT_PID=$THIS_SCRIPT_PID"
 
 
 PY3="/usr/bin/python3"
@@ -104,25 +107,6 @@ report()
 
 
 
-set_backup_stage_no()
-{
-	# make sure $1 is a number!!!
-	if test "$1" -eq 0
-	then
-		true
-	fi
-	echo "$1" > "$THIS_SCRIPT_LOCKFILE"
-}
-
-
-
-
-get_backup_stage_no()
-{
-       cat "$THIS_SCRIPT_LOCKFILE"	
-}
-
-
 
 
 check_if_running()
@@ -131,28 +115,92 @@ check_if_running()
 
 
 	# *** IMPORTANT!!!: check if this script is running ***
+	
 	#test -f "$THIS_SCRIPT_LOCKFILE" && msg_info "THIS_SCRIPT_LOCKFILE"
 	#test -f "$RSNAPSHOT_BACKUP_IN_PROGRESS_LOCKFILE" && msg_info "RSNAPSHOT_BACKUP_IN_PROGRESS_LOCKFILE"
+	
+	# stale lockfile will result in no future backup made
 
-	if test -f "$THIS_SCRIPT_LOCKFILE" || test -f "$RSNAPSHOT_BACKUP_IN_PROGRESS_LOCKFILE"
+	# flag indicate that this script is currently running 
+	# 0: not-running
+	# 1: running
+	run_status=0
+
+
+	# $THIS_SCRIPT_LOCKFILE should contain number (PID) only
+	# get previous pid if possible
+	previous_pid="$(cat "$THIS_SCRIPT_LOCKFILE" 2>/dev/null)"
+	#echo "previous_pid=$previous_pid"
+
+				
+	# compare the current pid
+	test "$THIS_SCRIPT_PID" -eq "$previous_pid" 2>/dev/null
+	tmp_rc="$?"
+	
+	if test "$tmp_rc" -eq 0
 	then
+		# ($THIS_SCRIPT_PID == $previous_pid)
+		run_status=1
+
+
+	elif test "$tmp_rc" -eq 1
+	then
+		# ($THIS_SCRIPT_PID != $previous_pid)
+		
+		# check if $previous_pid exists
+		tmp="$(ps -p "$previous_pid" | tail -n +2)"
+		#echo "$tmp"
+		
+
+		if test -n "$tmp"
+		then
+			# ($previous_pid exists)
+			run_status=1
+			
+		else
+			# ($previous_pid not exists)
+			msg_info "A lockfile $THIS_SCRIPT_LOCKFILE created by process pid: $previous_pid found but it was abnormally terminated. So removed."
+			rm -f "$THIS_SCRIPT_LOCKFILE"
+			#run_status=0
+		fi
+		
+
+	else
+	
+		# $previous_pid & $THIS_SCRIPT_PID comparison fails
+		if test -n "$previous_pid"
+		then
+			msg_error "This script cannot be continue because a lockfile $THIS_SCRIPT_LOCKFILE had possibly been tempered!"
+			msg_error "Please manually delete a lockfile $THIS_SCRIPT_LOCKFILE if the problem still persists."
+			return 1
+		fi
+		#run_status=0
+
+
+	fi
+
+
+
+	if test "$run_status" -eq 0
+	then
+		true
+	else
 		msg_error "$0 has already been running!!!"
 		return 1
 	fi
 
 
+
 	# *** IMPORTANT!!!: check if root ***
-	test "$tmp_rc" -eq 0 &&
+	test 0 -eq 0 &&
 		"$PY3" "$THIS_SCRIPT_DIRNAME/check_if_root.py" 2>&1 1>/dev/null || exit 1
 	tmp_rc="$?"
 
 
-	# To quickly show on PLC screen...
+	# check is completed, create a lockfile...
 	test "$tmp_rc" -eq 0 &&
-		touch "$THIS_SCRIPT_LOCKFILE" &&
-		"$PY3" "${THIS_SCRIPT_DIRNAME}/rsnapshot_monitor.py" 
+		echo "$THIS_SCRIPT_PID" > "$THIS_SCRIPT_LOCKFILE"
 	tmp_rc="$?"
-
 
 	return "$tmp_rc"
 }
@@ -326,7 +374,7 @@ exit_program()
 {
 	# $1: exit code
 	rc="$1"
-	stage_no="$(get_backup_stage_no)"
+
 
 	if test ! "$rc" -eq 0
 	then
@@ -355,9 +403,8 @@ handle_sigint()
 	if test "0" -eq 0
 	then
 		rc=1
-		stage_no="$(get_backup_stage_no)"
 		exit_program "$rc"
-		msg_error "rsnapshot was interrupt by user! (at stage $stage_no)"
+		msg_error "rsnapshot was interrupt by user!"
 	fi | report
 	exit 1
 }
@@ -390,24 +437,24 @@ then
 		rc=0
 
 		# updating ycspomeep goes here
-		set_backup_stage_no 1
+		#set_backup_stage_no 1
 		test "$rc" -eq 0 && update_from_git # << OK
 		rc="$?"
 		
-		set_backup_stage_no 2
+		#set_backup_stage_no 2
 		test "$rc" -eq 0 && cron_update_config # << OK
 		rc="$?"
 
-		set_backup_stage_no 3
+		#set_backup_stage_no 3
 		test "$rc" -eq 0 && mount_backup_disks # << OK
 		rc="$?"
 
-		set_backup_stage_no 4
+		#set_backup_stage_no 4
 		test "$rc" -eq 0 && backup # << OK
 		rc="$?"
 
 		# exit_program will run umount_backup_disks
-		set_backup_stage_no 5
+		#set_backup_stage_no 5
 		exit_program "$rc"
 
 	fi | report

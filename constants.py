@@ -8,7 +8,7 @@ import sys
 
 
 #/* important: set the current ycspomeep program version here */
-CURRENT_VERSION = "v3052b"
+CURRENT_VERSION = "v3053b"
 
 #/*---------------------------------------------------------------------*/
 
@@ -271,7 +271,7 @@ INCLUDE_SYSTEM_DISKS = getattr(x, 'INCLUDE_SYSTEM_DISKS',
 # * Note: this won't tell backup server error to PLC.
 # */
 NOTIFY_MAX_DISK_USED_PERCENT = getattr(x, 'NOTIFY_MAX_DISK_USED_PERCENT',
-                                       80)
+                                       95)
 
 #/* notify to RECIPIENT_EMAILS when disk temperature is not within
 # * the safe limit, [NOTIFY_MIN_DISK_TEMP, NOTIFY_MAX_DISK_TEMP]

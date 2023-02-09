@@ -45,47 +45,43 @@ def email_report(subject='',
 
     #/*---------------------------------------------------------------------*/
 
-    #print('can_sent_email:', can_sent_email)
+    #print('INFO: pidname:', pidname)
+    #print('INFO: can_sent_email:', can_sent_email)
 
     #/* send mail if can_sent_email=True */
     if can_sent_email:
 
-        #/* ignore send mail errors */
-        try:
-
-            #/* subject must include backup server name and datetime now!!! */
-            datetime_now = datetime.datetime.now()
-            subject = '{0}: {1} ({2})'.format(
-                BACKUP_SERVER_NAME, subject, datetime_now)
-
-            #/* send email message*/
-            send_mail(
-                host=SMTP_HOST,
-                port=SMTP_PORT_NUMBER,
-                try_ssl_tls=SMTP_TRY_SSL_TLS,
-                timeout=SMTP_TIMEOUT_SECONDS,
-                recipient_addresses=RECIPIENT_EMAILS,
-                sender_address=SENDER_EMAIL,
-                sender_loginname=SENDER_LOGIN_NAME,
-                sender_password=SENDER_LOGIN_PASSWORD,
-
-                subject=subject,
-                message=message,
-                message_file=message_file,
-                use_html_markup=use_html_markup,
-                attach_files=attach_files,
-                encoding=encoding,
-            )
-
-        except Exception as e:
-            #print("WARINING: cannot sent email: {0}".format(e))
-            pass
+        #/* subject must include backup server name and datetime now!!! */
+        datetime_now = datetime.datetime.now()
+        subject = '{0}: {1} ({2})'.format(
+            BACKUP_SERVER_NAME, subject, datetime_now)
 
         #/* update pidfile's mtime, if any */
         if pidname:
             cmd_touch(pidfile, datetime_=datetime.datetime.now())
+            
+        #/* send email message*/
+        send_mail(
+            host=SMTP_HOST,
+            port=SMTP_PORT_NUMBER,
+            try_ssl_tls=SMTP_TRY_SSL_TLS,
+            timeout=SMTP_TIMEOUT_SECONDS,
+            recipient_addresses=RECIPIENT_EMAILS,
+            sender_address=SENDER_EMAIL,
+            sender_loginname=SENDER_LOGIN_NAME,
+            sender_password=SENDER_LOGIN_PASSWORD,
+
+            subject=subject,
+            message=message,
+            message_file=message_file,
+            use_html_markup=use_html_markup,
+            attach_files=attach_files,
+            encoding=encoding,
+        )
+
+
 
 
 if __name__ == '__main__':
     print(simple_argparse(email_report, sys.argv[1:]))
-
+    #print(simple_argparse(email_report, sys.argv[1:]))

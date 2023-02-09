@@ -3,6 +3,7 @@ import sys
 from simple_argparse import simple_argparse
 from rsnapconfig_getparam_snapshot_root import rsnapconfig_getparam_snapshot_root
 from constants import NOTIFY_MAX_DISK_USED_PERCENT
+from email_report2 import email_report2
 
 
 #/* check disk usage from snapshot_root, which defined in given rsnapshot config file
@@ -16,8 +17,8 @@ def rsnapshot_check_snapshot_root_usage(negate=False):
     #/* True if snapshot_root exists */
     have_snapshot_root_exist = False
 
-    #/* True if snapshot_root have not enough disk space */
-    have_low_disk_space = False
+    #/* True if snapshot_root have enough storage space */
+    have_enough_storage = True
 
     #/*---------------------------------------------------------------------*/
 
@@ -63,7 +64,6 @@ def rsnapshot_check_snapshot_root_usage(negate=False):
     except Exception as e:
         pass
 
-
     #/*---------------------------------------------------------------------*/
 
     #/* test... */
@@ -73,10 +73,32 @@ def rsnapshot_check_snapshot_root_usage(negate=False):
         condition = (not condition)
 
     if condition:
-        have_low_disk_space = True
+        have_enough_storage = False
 
-    #/* --- return 6 values --- */
-    return have_snapshot_root_exist, have_low_disk_space, bytes_used, bytes_free, bytes_total, percent_used, percent_free
+    #/*---------------------------------------------------------------------*/
+
+    #/* report if snapshot_root have low disk usage (quiet=False) */
+
+    #print('DEBUG: rsnapshot_check_snapshot_root_usage')
+    
+    if not have_enough_storage:
+
+        #/* email */
+        tmp = '{0} has only {1:.1f}% ({2} bytes) disk space remaining!!! Try to delete some old or unnecessary files!!!'.format(
+            snapshot_root,
+            percent_free,
+            bytes_free,
+        )
+        
+        email_report2(warning_msgs=[tmp])
+
+        #/* PLC */
+
+    #/*---------------------------------------------------------------------*/
+
+    return have_snapshot_root_exist, have_enough_storage, bytes_used, bytes_free, bytes_total, percent_used, percent_free
+
+
 
 
 if __name__ == '__main__':
