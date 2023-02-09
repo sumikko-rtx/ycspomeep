@@ -50,7 +50,7 @@ RECIPIENT_EMAILS = [
 # *
 # * Note: this won't tell backup server error to PLC.
 # */
-NOTIFY_MAX_DISK_USED_PERCENT = 80
+#NOTIFY_MAX_DISK_USED_PERCENT = 80
 
 
 #/* notify to RECIPIENT_EMAILS when disk temperature is not within
@@ -58,8 +58,8 @@ NOTIFY_MAX_DISK_USED_PERCENT = 80
 # *
 # * Note: this won't tell backup server error to PLC.
 # */
-NOTIFY_DISK_MIN_TEMP = 20
-NOTIFY_DISK_MAX_TEMP = 50
+#NOTIFY_DISK_MIN_TEMP = 20
+#NOTIFY_DISK_MAX_TEMP = 50
 
 
 #/* notify to RECIPIENT_EMAILS when disk has reached at least n hours
@@ -69,7 +69,7 @@ NOTIFY_DISK_MAX_TEMP = 50
 # *
 # * Note: this won't tell backup server error to PLC.
 # */
-NOTIFY_DISK_MAX_POWER_ON_HOURS = 35040
+#NOTIFY_DISK_MAX_POWER_ON_HOURS = 35040
 
 
 #/* notify to RECIPIENT_EMAILS when disk has at least n (possible) bad sectors
@@ -79,45 +79,45 @@ NOTIFY_DISK_MAX_POWER_ON_HOURS = 35040
 # *
 # * Note: this will tell backup server error to PLC and stop all existing backup jobs.
 # */
-NOTIFY_DISK_MAX_BAD_SECTORS = 1024
+#NOTIFY_DISK_MAX_BAD_SECTORS = 1024
 
 
 #/* If set to True,
 # * notify to RECIPIENT_EMAILS when backup was successfully completed
 # */
-NOTIFY_BACKUP_SUCCESS = False  # <<<
+#NOTIFY_BACKUP_SUCCESS = False  # <<<
 
 
 #/* If set to True,
 # * notify to RECIPIENT_EMAILS when backup was failed or interrupted by user
 # */
-NOTIFY_BACKUP_FAILED = True  # <<<
+#NOTIFY_BACKUP_FAILED = True  # <<<
 
 
 #/* If set to True,
 # * notify to RECIPIENT_EMAILS when backup was run by user
 # */
-NOTIFY_MANUAL = False
+#NOTIFY_MANUAL = False
 
 
 #/* If set to True,
 # * notify to RECIPIENT_EMAILS when backup was run by cron / python3-schedule
 # */
-NOTIFY_AUTO = False
+#NOTIFY_AUTO = False
 
 
 #/* notify when at least n files copied (n = 0, 1, 2, ...)
 # *
 # * -1 to un-set.
 # */
-NOTIFY_MIN_FILE_TRANSFERRED = -1
+#NOTIFY_MIN_FILE_TRANSFERRED = -1
 
 
 #/* notify when at least n bytes copied (n = 0, 1, 2, ...)
 # *
 # * -1 to un-set.
 # */
-NOTIFY_MIN_BYTES_TRANSFERRED = -1
+#NOTIFY_MIN_BYTES_TRANSFERRED = -1
 
 
 #/* notify when backup duration at least n second (n = 0, 1, 2, ...)
@@ -137,6 +137,6 @@ NOTIFY_MIN_BYTES_TRANSFERRED = -1
 # * note: 1 hour    = 3600 seconds
 # *       1 minutes = 60 seconds
 # */
-NOTIFY_SOFT_BACKUP_SECONDS_LIMIT = 9*3600  # <<<
-NOTIFY_HARD_BACKUP_SECONDS_LIMIT = 18*3600  # <<<
+#NOTIFY_SOFT_BACKUP_SECONDS_LIMIT = 9*3600  # <<<
+#NOTIFY_HARD_BACKUP_SECONDS_LIMIT = 18*3600  # <<<
 
