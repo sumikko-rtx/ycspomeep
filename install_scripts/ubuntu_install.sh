@@ -60,54 +60,66 @@ apt -y upgrade
 
 # install software
 # util-linux provides mountpoint
+# psmisc provides killall, pstree
+# procps provides ps, free, skill, pkill, pgrep, snice, tload, top, uptime, vmstat, pidof, pmap, slabtop, w, watch, pwdx and pidwait
 apt -yq install \
 	acpid \
-	vim \
-	mdadm \
 	smartmontools \
-	network-manager \
 	rsync \
 	perl \
 	rsnapshot \
-	smbclient \
-	cifs-utils \
 	cron \
 	python3 \
 	python3-pip \
 	python3-chardet \
-	openssh-client \
+	python3-psutil \
 	git \
 	util-linux \
 	psmisc \
 	procps \
 	`true "*** end of package list ***"`
 
+
+
+
 # install modbus_tk
 umask 022
 pip3 install modbus_tk
 
+
+
+
+## install webmin (deprecated, see the next section below)
+## reference: http://www.webmin.com/deb.html
+#
+## add to repository
+#mkdir -p /etc/apt/sources.list.d/
+#cat > /etc/apt/sources.list.d/webmin.list << EOF
+#deb https://download.webmin.com/download/repository sarge contrib
+#EOF
+#
+## install gpg key
+#wget https://download.webmin.com/jcameron-key.asc
+#apt-key add jcameron-key.asc
+#rm -f jcameron-key.asc
+#
+## install webmin
+#apt -y install apt-transport-https
+#apt -y update
+#apt -y install webmin
+
+
+
+
 # install webmin
-# reference: http://www.webmin.com/deb.html
-
-# add to repository
-mkdir -p /etc/apt/sources.list.d/
-cat > /etc/apt/sources.list.d/webmin.list << EOF
-deb https://download.webmin.com/download/repository sarge contrib
-EOF
-
-
-
-
-
-# install gpg key
-wget https://download.webmin.com/jcameron-key.asc
-apt-key add jcameron-key.asc
-rm -f jcameron-key.asc
-
-# install webmin
-apt -y install apt-transport-https
+# reference: https://webmin.com/download/
+curl -o /tmp/setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
+yes | sh /tmp/setup-repos.sh
 apt -y update
-apt -y install webmin
+apy -y install webmin
+
+
+
 
 # enable this server shutdown by simply pressing a power button
 # https://unix.stackexchange.com/questions/242129/how-to-set-power-button-to-shutdown-instead-of-suspend
@@ -115,7 +127,11 @@ mkdir -p /etc/acpi/events/ && \
 	printf "event=button/power\naction=/sbin/poweroff\n" > /etc/acpi/events/power && \
 	systemctl restart acpid.service
 
+
+
+
+
 # --- END OF INSTALLATION SCRIPT --- 
 echo ""
-echo "--- The ycspomeep backup system program installation is now complete!!! ---"
+echo "--- The ycspomeep backup program installation is now complete!!! ---"
 echo ""
