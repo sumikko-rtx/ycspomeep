@@ -114,13 +114,26 @@ def send_mail(host,
 
             #/* single dash: read from stdin */
             if message_file == '-':
-                f = sys.stdin
-                message = f.read()
+                
+                #/* https://stackoverflow.com/questions/32282448/read-stdin-as-binary
+                # * 
+                # * for python 3: sys.stdin.buffer.read()
+                # * for python 2: sys.stdin.read()
+                # */
+                if sys.hexversion >= 0x03000000:
+                    message = sys.stdin.buffer.read()
+                else:
+                    message = sys.stdin.read()
 
-            #/* otherwse read from a regular file*/
+            #/* otherwse read from a regular file */
             else:
-                with open(message_file, 'r') as f:
+                with open(message_file, 'rb') as f:
                     message = f.read()
+
+            #/* remove invalid bytes, if possible
+            # * https://stackoverflow.com/questions/26541968/delete-every-non-utf-8-symbols-from-string
+            # */
+            message = message.decode(encoding, 'ignore') #.encode(encoding)
 
         except Exception as e:
 

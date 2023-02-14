@@ -33,31 +33,128 @@ my @errors=();
 my @warnings=();
 # --- modification end ---
 
+# --- modification start ---
+sub min {
+    my $min = shift;
+    foreach (@_) {
+        $min = $_ if $_ < $min;
+    }
+    return $min;
+}
+
+sub max {
+    my $max = shift;
+    foreach (@_) {
+        $max = $_ if $_ > $max;
+    }
+    return $max;
+}
+# --- modification end ---
+
+
+
 sub pretty_print(){
 	my $ofh = select(STDOUT);
 	$FORMAT_NAME="BREPORTBODY";
 	$FORMAT_TOP_NAME="BREPORTHEAD";
 	select($ofh);
 
+
+	# --- modification start ---
+
+	# this modification fixes a problem that backup source location possible
+	# being truntcated.
+
+	# calculate the column length for each row
+
+	my $col_source_len = 8;
+	my $col_files_len = 13;
+	my $col_filest_len = 13;
+	my $col_bytes_len = 10;
+	my $col_bytest_len = 10;
+	my $col_filelistgentime_len = 15;
+	my $col_filelistxfertime_len = 16;
+
 	foreach my $source (sort keys %bkdata){
+	
 		if($bkdata{$source} =~ /error/i) { print "ERROR $source $bkdata{$source}"; next; }
+		
 		my $files = $bkdata{$source}{'files'};
 		my $filest = $bkdata{$source}{'files_tran'};
-		my $filelistgentime = $bkdata{$source}{'file_list_gen_time'};
-		my $filelistxfertime = $bkdata{$source}{'file_list_trans_time'};
 		my $bytes = $bkdata{$source}{'file_size'}/1000000; # convert to MB
 		my $bytest = $bkdata{$source}{'file_tran_size'}/1000000; # convert to MB
-		$source =~ s/^[^\@]+\@//; # remove username
-		format BREPORTHEAD =
-SOURCE                          TOTAL FILES   FILES TRANS      TOTAL MB     MB TRANS   LIST GEN TIME  FILE XFER TIME
---------------------------------------------------------------------------------------------------------------------
-.
-		format BREPORTBODY =
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<	@>>>>>>>>>>   @>>>>>>>>>> @#########.## @########.##   @>>>>>>>>>>>>  @>>>>>>>>>>>>>
-$source,                        $files,       $filest,    $bytes,       $bytest,       $filelistgentime, $filelistxfertime
-.
-		write STDOUT;
+		my $filelistgentime = $bkdata{$source}{'file_list_gen_time'}; # ends with "seconds"
+		my $filelistxfertime = $bkdata{$source}{'file_list_trans_time'}; # ends with "seconds"
+		
+		# convert each to string...
+		$source =~ s/^[^\@]+\@//; # remove username (in case using ssh)
+		$files = sprintf("%u", $files);
+		$filest = sprintf("%u", $filest);
+		$bytes = sprintf("%.2f", $bytes);
+		$bytest = sprintf("%.2f", $bytest);
+		#$filelistgentime = sprintf("%s", $filelistgentime);
+		#$filelistxfertime = sprintf("%s", $filelistxfertime);
+		
+		# leave at least two (2) spaces for padding
+		$col_source_len = max($col_source_len, 2 + length($source));
+		$col_files_len = max($col_files_len, 2 + length($files));
+		$col_filest_len = max($col_filest_len, 2 + length($filest));
+		$col_bytes_len = max($col_bytes_len, 2 + length($bytes));
+		$col_bytest_len = max($col_bytest_len, 2 + length($bytest));
+		$col_filelistgentime_len = max($col_filelistgentime_len, 2 + length($filelistgentime));
+		$col_filelistxfertime_len = max($col_filelistxfertime_len, 2 + length($filelistxfertime));
 	}
+	
+	
+	
+	
+	# print header row
+	printf "%-${col_source_len}s%-${col_files_len}s%-${col_filest_len}s%-${col_bytes_len}s%-${col_bytest_len}s%-${col_filelistgentime_len}s%-${col_filelistxfertime_len}s\n","SOURCE","TOTAL FILES", "FILE TRANS", "TOTAL MB", "MB TRANS", "LIST GEN TIME", "FILE XFER TIME";
+
+
+
+
+	# print seperator line
+	print "-" x $col_source_len;
+	print "-" x $col_files_len;
+	print "-" x $col_filest_len;
+	print "-" x $col_bytes_len;
+	print "-" x $col_bytest_len;
+	print "-" x $col_filelistgentime_len;
+	print "-" x $col_filelistxfertime_len;
+	print "\n";
+	
+
+
+
+	# finally, print each all backup stats
+	foreach my $source (sort keys %bkdata){
+		
+		if($bkdata{$source} =~ /error/i) { print "ERROR $source $bkdata{$source}"; next; }
+		
+		my $files = $bkdata{$source}{'files'};
+		my $filest = $bkdata{$source}{'files_tran'};
+		my $bytes = $bkdata{$source}{'file_size'}/1000000; # convert to MB
+		my $bytest = $bkdata{$source}{'file_tran_size'}/1000000; # convert to MB
+		my $filelistgentime = $bkdata{$source}{'file_list_gen_time'};
+		my $filelistxfertime = $bkdata{$source}{'file_list_trans_time'};
+		
+		# convert each to string...
+		$source =~ s/^[^\@]+\@//; # remove username (in case using ssh)
+		$files = sprintf("%u", $files);
+		$filest = sprintf("%u", $filest);
+		$bytes = sprintf("%.2f", $bytes);
+		$bytest = sprintf("%.2f", $bytest);
+		#$filelistgentime = sprintf("%s", $filelistgentime);
+		#$filelistxfertime = sprintf("%s", $filelistxfertime);
+		
+		printf "%-${col_source_len}s%-${col_files_len}s%-${col_filest_len}s%-${col_bytes_len}s%-${col_bytest_len}s%-${col_filelistgentime_len}s%-${col_filelistxfertime_len}s\n", $source, $files, $filest, $bytes, $bytest, $filelistgentime, $filelistxfertime;
+
+		
+	}
+
+	# --- modification end ---
+
 }
 
 sub nextLine($){
@@ -82,6 +179,15 @@ while (my $line = nextLine(\@rsnapout)){
 			$line =~ s/\\$//g;
 			$line .= nextLine(\@rsnapout);
 		}
+		
+		# --- modification start ---
+
+		# replace spaces inside the backup source location
+		$line =~ s/\\ /_/g;
+		
+		# --- modification end -
+		
+		
 		push(@rsynccmd,split(/\s+/,$line)); # split into command components
 		my $source = $rsynccmd[-2]; # count backwards: source always second to last
 		#print $source;
@@ -179,13 +285,17 @@ if(scalar @errors > 0){
 print "\n";
 
 
+# get the full path to a Perl script that is executing?
+use File::Basename;
+my $this_script_dir = dirname(__FILE__);
+
+
 # tell what version does ycspomeep be currently using.
-my $ycspomeep_version = `/usr/bin/python3 -c "from constants import CURRENT_VERSION; print(CURRENT_VERSION);"`;
+my $ycspomeep_version = `cd $this_script_dir && /usr/bin/python3 -c "from constants import CURRENT_VERSION; print(CURRENT_VERSION);"`;
 
 $ycspomeep_version =~ s/\n//g; # << remove newline
 $ycspomeep_version =~ s/\r//g; # << remove newline also
 
 printf "*** This mail was sent by ycspomeep version %s. ***\n\n", "$ycspomeep_version";
-
 
 # --- modification end ---
